@@ -17,6 +17,8 @@ This is a simple API boilerplate based off the fantastic Youtube series by Ben A
 
 ### Setup
 
+To get up and running I have included a sample User resolver and entitiy.  This should include everything you need to handle basic registration/login/reset-password functionality.
+
 ```bash
 npm install
 ```
