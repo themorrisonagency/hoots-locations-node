@@ -1,0 +1,27 @@
+Arguments: 
+  /usr/local/bin/node /Users/mikeconrad/.npm-packages/bin/yarn add apollo-server-express argon2 class-validator connect-redis cors dotenv-save express express-session graphql ioredis pg redis reflect-metadata type-graphql typeorm uuid
+
+PATH: 
+  /Users/mikeconrad/Desktop/platform-tools:/usr/local/opt/ruby@2.7/bin:/usr/local/opt/ruby@2.7/bin:/Applications/MAMP/Library/bin/:/Applications/MAMP/bin/php/php8.0.8/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/mikeconrad/Desktop/platform-tools:/usr/local/opt/ruby@2.7/bin:/Applications/MAMP/Library/bin/:/Applications/MAMP/bin/php/php8.0.8/bin:/Users/mikeconrad/.npm-packages/bin:/Users/mikeconrad/.npm-packages/bin
+
+Yarn version: 
+  1.22.10
+
+Node version: 
+  14.17.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: getaddrinfo ENOTFOUND registry.yarnpkg.com
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:67:26)
+
+npm manifest: 
+  No manifest
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
