@@ -12,20 +12,28 @@ import connectRedis from "connect-redis";
 import { createConnection } from "typeorm";
 
 import path from "path";
+import {Location} from "./entities/Location"
 import { User } from "./entities/User";
 import { UserResolver } from "./resolvers/user";
+import { LocationResolver } from "./resolvers/location";
+import CreateOrUpdateLocation from "./utils/CreateOrUpdateLocation";
+const axios = require('axios')
 
 const session = require("express-session");
 
 const main = async () => {
+  // Explicit config using .env file
   const conn = await createConnection({
     type: "postgres",
     url: process.env.DATABASE_URL,
     logging: true,
     synchronize: true,
-    entities: [User],
+    entities: [User, Location],
     migrations: [path.join(__dirname, "./migrations/*")]
   });
+
+  // Alternative config will pick up ormconfig.json
+  // const conn = await createConnection(await getConnectionOptions())
   // await Post.delete({})
   if (process.env.RUN_MIGRATIONS === "true") {
     await conn.runMigrations()
@@ -62,6 +70,81 @@ const main = async () => {
       resave: false,
     })
   );
+
+  app.get('/hooks/yext/sync/:id', async (req, res) => {
+
+    let entitySearch
+    if (req.params.id == 'all'){
+      entitySearch = `entities`
+    } else {
+      entitySearch = `entities/${req.params.id}`
+    }
+
+    const {data: yextLocation} = await axios.get(`https://api.yext.com/v2/accounts/me/${entitySearch}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`)
+
+    const yextResponse = yextLocation.response
+
+    if (req.params.id == 'all'){
+      for (const entity of yextResponse.entities){
+        await CreateOrUpdateLocation(entity, entity.meta.id)
+      }
+    }
+    res.json(yextResponse)
+    res.end()
+    try {
+
+    } catch(e){
+      console.log('e',e)
+    }
+  
+    
+  })
+  // app.get('/hooks/yext/:id', async (req, res, next) => {
+  //   console.log('getting yexts', req.params.id)
+
+  //   const locations = await Location.find()
+  //   for (const loc of locations){
+  //     const hourObj = {
+  //       monOpen: loc.monOpen || "12:00AM",
+  //       monClose: loc.monClose || "12:00AM",
+  //       tueOpen: loc.tueOpen || "12:00AM",
+  //       tueClose: loc.tueClose|| "12:00AM",
+  //       wedOpen: loc.wedOpen || "12:00AM",
+  //       wedClose: loc.wedClose|| "12:00AM",
+  //       thuOpen: loc.thuOpen || "12:00AM",
+  //       thuClose: loc.thuClose|| "12:00AM",
+  //       friOpen: loc.friOpen || "12:00AM",
+  //       friClose: loc.friClose|| "12:00AM",
+  //       satOpen: loc.satOpen || "12:00AM",
+  //       satClose: loc.satClose|| "12:00AM",
+  //       sunOpen: loc.sunOpen || "12:00AM",
+  //       sunClose: loc.sunClose|| "12:00AM",
+  //     }
+  //     loc.hours = await convertDbHoursToYext(hourObj)
+  //   }
+
+  //   res.send(locations)
+  //   // const {data: location} = await axios.get(`https://api.yext.com/v2/accounts/me/entities/${req.params.id}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`)
+  //   // res.send(location.response)
+
+  //   // let updatedLocation;
+  //   // try {
+  //   //     const result = await getConnection()
+  //   //     .createQueryBuilder()
+  //   //     .insert()
+  //   //     .into(Location)
+  //   //     .values({
+  //   //         ...options
+  //   //     })
+  //   //     .returning('*')
+  //   //     .execute()
+  //   //     updatedLocation = result.raw[0]
+  //   // } catch (err) {
+  //   //     return err
+  //   // } 
+  //   next()
+
+  // })
   
   /**
    * 
@@ -69,7 +152,7 @@ const main = async () => {
    */
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver],
+      resolvers: [UserResolver, LocationResolver],
       validate: false,
     }),
     context: ({ req, res }) => ({
