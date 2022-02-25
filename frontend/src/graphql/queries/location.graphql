@@ -1,0 +1,5 @@
+query Location($yextId: String!) {
+    location(yextId: $yextId) {
+        ...LocationSnippet
+    }
+}

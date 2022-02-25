@@ -38,6 +38,7 @@
     "apollo-server-express": "^3.3.0",
     "argon2": "^0.28.2",
     "axios": "^0.26.0",
+    "body-parser": "^1.19.2",
     "class-validator": "^0.13.1",
     "connect-redis": "^6.0.0",
     "cors": "^2.8.5",

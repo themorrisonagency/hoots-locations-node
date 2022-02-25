@@ -1,0 +1,20 @@
+fragment LocationSnippet on Location {
+    address
+    description
+    hours
+    name
+    c_cateringURL
+    c_infoBanner
+    c_locationHighlights
+    c_locationName
+    c_locationShortName
+    c_locationSlug
+    c_mapTile
+    c_mapUrl
+    c_oloID
+    c_promoUrl
+    c_shortDescription
+    geocodedCoordinate
+    mainPhone
+    orderUrl
+}

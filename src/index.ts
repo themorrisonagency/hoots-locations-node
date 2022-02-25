@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { COOKIE_NAME, __prod__ } from "./constants";
 import express from "express";
+import bodyParser from 'body-parser'
 import { ApolloServer } from "apollo-server-express";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import { buildSchema } from "type-graphql";
@@ -70,7 +71,21 @@ const main = async () => {
       resave: false,
     })
   );
+  app.use(bodyParser.json())
 
+
+  app.put('/hooks/yext/:id', async (req, res) => {
+
+    const url = `https://api.yext.com/v2/accounts/me/entities/${req.params.id}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`
+    try {
+      const result = await axios.put(url, req.body)
+      await CreateOrUpdateLocation(result.data.response, req.params.id)
+      res.json({status: 'success'})
+    } catch(e){
+      res.json(e)
+    }
+
+  })
   app.get('/hooks/yext/sync/:id', async (req, res) => {
 
     let entitySearch
@@ -88,6 +103,8 @@ const main = async () => {
       for (const entity of yextResponse.entities){
         await CreateOrUpdateLocation(entity, entity.meta.id)
       }
+    } else {
+      await CreateOrUpdateLocation(yextResponse, yextResponse.meta.id)
     }
     res.json(yextResponse)
     res.end()
