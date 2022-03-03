@@ -1,0 +1,5 @@
+mutation UpdateVisibility($input: UpdateVisibleInput!) {
+      updateVisibility(input: $input) {
+    visible
+  }
+}

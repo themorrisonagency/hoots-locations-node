@@ -6,13 +6,13 @@ function HoursInput(obj) {
   return (
       <>
           {Object.keys(hours).map((day) => (
-        <div className="hoursWrapper">
-        <label>{day}</label>
+        <div className="hoursWrapper" key={day}>
+        <h3>{day}</h3>
         <br />
         <label htmlFor={day}>Open</label>
-          <Field id={`${day}Open`} name={`${day}Open`} placeholder={`${day}Open`} />
+          <Field id={`${day}Open`} type="text" name={`${day}Open`} placeholder={`${day}Open`} />
           <label htmlFor={day}>Close</label>
-          <Field id={`${day}Close`} name={`${day}Close`} placeholder={`${day}Close`} />
+          <Field id={`${day}Close`} type="text" name={`${day}Close`} placeholder={`${day}Close`} />
 
         </div>
     ))}

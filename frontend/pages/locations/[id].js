@@ -4,151 +4,314 @@ import { createUrqlClient } from "../../src/utils/createUrqlClient"
 import { withUrqlClient } from "next-urql"
 import { useLocationQuery } from "../../src/generated/graphql"
 import { Formik, Field, Form, FormikHelpers } from "formik"
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router"
 import ConvertToJson from "../../src/utils/ConvertToJson"
 import { useState } from "react"
-import HoursInput from "../../src/src/components/HoursInput"
-import axios from 'axios'
+import HoursInput from "../../src/components/HoursInput"
+import axios from "axios"
+import { Box, Heading, Flex, Button, FormControl, FormLabel, FormErrorMessage, FormHelperText } from "@chakra-ui/react"
+import { Input } from "@chakra-ui/input"
 
-async function updateLocation(id, location){
-    // const url = `https://api.yext.com/v2/accounts/me/entities/${id}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`
-    const url = `http://localhost:4000/hooks/yext/${id}`
-    let obj = {
-        address: {
-            line1: location.line1,
-            city: location.city,
-            region: location.region,
-        },
-        hours: {
-            monday: {
-                openIntervals: [{start: location.mondayOpen, end:location.mondayClose}]
-            },
-            tuesday: {
-                openIntervals: [{start: location.tuesdayOpen, end: location.tuesdayClose}]
-            },
-            wednesday: {
-                openIntervals: [{start: location.wednesdayOpen, end: location.wednesdayClose}]
-            },
-            thursday: {
-                openIntervals: [{start: location.thursdayOpen, end: location.thursdayClose}]
-            },
-            friday: {
-                openIntervals: [{start: location.fridayOpen, end: location.fridayClose}]
-            },
-            saturday: {
-                openIntervals: [{start: location.saturdayOpen, end: location.saturdayClose}]
-            },
-            sunday: {
-                openIntervals: [{start: location.sundayOpen, end: location.sundayClose}]
-            }
-        }
+import Convert24HourTo12 from "../../src/utils/Convert24HourTo12"
+
+async function timeConversion(s) {
+  const ampm = s.slice(-2).toUpperCase()
+  const hours = Number(s.slice(0, 2))
+  let time = s.slice(0, -2)
+  if (ampm === "AM") {
+    if (hours === 12) {
+      // 12am edge-case
+      return time.replace(s.slice(0, 2), "00").trim()
     }
-    const result = await axios.put(url, obj)
+    return time.trim()
+  } else if (ampm === "PM") {
+    if (hours !== 12) {
+      return time.replace(s.slice(0, 2), String(hours + 12)).trim()
+    }
+    return time.trim() // 12pm edge-case
+  }
+  return "Error: AM/PM format is not valid"
+}
+async function updateLocation(id, location) {
+  // const url = `https://api.yext.com/v2/accounts/me/entities/${id}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`
+  const url = `http://localhost:4000/hooks/yext/${id}`
+  let hoursObject = {
+    monday: {
+      openIntervals: [{ start: location.mondayOpen, end: location.mondayClose }],
+    },
+    tuesday: {
+      openIntervals: [{ start: location.tuesdayOpen, end: location.tuesdayClose }],
+    },
+    wednesday: {
+      openIntervals: [{ start: location.wednesdayOpen, end: location.wednesdayClose }],
+    },
+    thursday: {
+      openIntervals: [{ start: location.thursdayOpen, end: location.thursdayClose }],
+    },
+    friday: {
+      openIntervals: [{ start: location.fridayOpen, end: location.fridayClose }],
+    },
+    saturday: {
+      openIntervals: [{ start: location.saturdayOpen, end: location.saturdayClose }],
+    },
+    sunday: {
+      openIntervals: [{ start: location.sundayOpen, end: location.sundayClose }],
+    },
+  }
+  await Object.keys(hoursObject).map(async (day) => {
+    if (hoursObject[day].openIntervals[0].start) {
+      hoursObject[day].openIntervals[0].start = await timeConversion(hoursObject[day].openIntervals[0].start)
+    }
+  })
+  await Object.keys(hoursObject).map(async (day) => {
+    if (hoursObject[day].openIntervals[0].end) {
+      hoursObject[day].openIntervals[0].end = await timeConversion(hoursObject[day].openIntervals[0].end)
+    }
+  })
 
-    console.log('result', result)
+  let deleteKeys = [
+    "fridayClose",
+    "fridayOpen",
+    "line1",
+    "mondayClose",
+    "mondayOpen",
+    "postalCode",
+    "saturdayClose",
+    "saturdayOpen",
+    "state",
+    "sundayClose",
+    "sundayOpen",
+    "thursdayClose",
+    "thursdayOpen",
+    "tuesdayClose",
+    "tuesdayOpen",
+    "wednesdayClose",
+    "wednesdayOpen",
+    "city",
+    "visible",
+    "comingSoon"
+  ]
 
+  let obj = {
+    address: {
+      line1: location.line1,
+      city: location.city,
+      region: location.region,
+      postalCode: location.postalCode,
+    },
+    hours: hoursObject,
+    orderUrl: {
+      url: location.orderUrl,
+      preferDisplayUrl: false,
+    },
+    c_oloID: location.c_oloID.toString() || "",
+    ...location,
+  }
+  deleteKeys.forEach((key) => {
+    delete obj[key]
+  })
+  const result = await axios.put(url, obj)
 }
 const Location = () => {
-    const router = useRouter()
-    const intId = typeof router.query.id === 'string' ? router.query.id : -1
-    const [{data, error, fetching}] = useLocationQuery({
-        pause: intId === -1, // If we don't have an id, then stop the query.
-        variables: {
-            yextId: router.query.id
-        }
-        
+  const router = useRouter()
+  const intId = typeof router.query.id === "string" ? router.query.id : -1
+  const [{ data, error, fetching }] = useLocationQuery({
+    pause: intId === -1, // If we don't have an id, then stop the query.
+    variables: {
+      yextId: router.query.id,
+    },
+  })
+  const [location, setLocation] = useState("")
+
+  const [openHours, setOpeningHours] = useState([])
+  const {
+    address,
+    description,
+    hours,
+    name,
+    c_cateringURL,
+    c_infoBanner,
+    c_locationHighlights,
+    c_locationName,
+    c_locationShortName,
+    c_locationSlug,
+    c_mapTile,
+    c_mapUrl,
+    c_oloID,
+    c_promoUrl,
+    c_shortDescription,
+    geocodedCoordinate,
+    mainPhone,
+    visible,
+    c_comingSoonText,
+    comingSoon,
+    c_masthead,
+    c_promoGraphic,
+    orderUrl,
+  } = location
+  console.log("visibnle", visible)
+
+  if (!fetching && data && location == "") {
+    data.location.formatted = false
+    Object.keys(data.location).forEach((key) => {
+      try {
+        data.location[key] = JSON.parse(data.location[key])
+      } catch {
+        data.location[key] = data.location[key]
+      }
     })
-    const [location, setLocation ] = useState("")
+    setLocation(data.location)
+  }
 
-    const [openHours, setOpeningHours] = useState([])
-
-    if (!fetching && data && location == ""){
-        Object.keys(data.location).forEach((key) => {
-            try {
-              data.location[key] = JSON.parse(data.location[key])
-            } catch {
-              data.location[key] = data.location[key]
-            }
-          })
-        setLocation(data.location)
-    }
   return (
-    <div className={styles.container}>
+    <Box bgColor="#fef0e9">
       <Head>
         <title>Create Next App</title>
         <meta name="description" content="Generated by create next app" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <Box bgColor={"white"} p={5}>
+        <Flex justifyContent={"space-between"}>
+          <Heading>{location.c_locationName}</Heading>
+          <Heading>Hoots Wings</Heading>
+        </Flex>
+      </Box>
       <main className={styles.main}>
         {!fetching && location ? (
+          <Formik
+            initialValues={{
+              c_locationName,
+              c_locationShortName,
+              line1: address.line1 || "",
+              city: address.city || "",
+              state: address.region || "",
+              postalCode: address.postalCode || "",
+              description,
+              name,
+              c_cateringURL,
+              c_infoBanner,
+              c_locationName,
+              c_locationShortName,
+              c_locationSlug,
+              c_mapTile,
+              c_mapUrl,
+              c_oloID: c_oloID.toString(),
+              c_promoUrl,
+              c_shortDescription,
+              geocodedCoordinate,
+              mainPhone,
+              orderUrl: orderUrl.url,
+              visible,
+              c_comingSoonText,
+              mondayOpen: hours.monday.openIntervals[0].start || "",
+              mondayClose: hours.monday.openIntervals[0].end || "",
+              tuesdayOpen: hours.tuesday.openIntervals[0].start || "",
+              tuesdayClose: hours.tuesday.openIntervals[0].end || "",
+              wednesdayOpen: hours.wednesday.openIntervals[0].start || "",
+              wednesdayClose: hours.wednesday.openIntervals[0].end || "",
+              thursdayOpen: hours.thursday.openIntervals[0].start || "",
+              thursdayClose: hours.thursday.openIntervals[0].end || "",
+              fridayOpen: hours.friday.openIntervals[0].start || "",
+              fridayClose: hours.friday.openIntervals[0].end || "",
+              saturdayOpen: hours.saturday.openIntervals[0].start || "",
+              saturdayClose: hours.saturday.openIntervals[0].end || "",
+              sundayOpen: hours.sunday.openIntervals[0].start || "",
+              sundayClose: hours.sunday.openIntervals[0].end || "",
+            }}
+            onSubmit={async (values) => {
+              await updateLocation(intId, values)
+              //   await new Promise((r) => setTimeout(r, 500))
+              //   alert(JSON.stringify(values, null, 2))
+            }}>
+            <Form>
+              <div className="formGroup">
+                <h1>basic info</h1>
 
-            
-              <Formik
-                initialValues={{
-                  c_locationName: location.c_locationName || "",
-                  c_locationShortName: location.c_locationShortName || "",
-                  line1: location.address.line1 || "",
-                  city: location.address.city || "",
-                  state: location.address.region || "",
-                  description: location.description || "",
-                  c_cateringURL: location.c_cateringURL || "",
-                  c_infoBanner: location.c_infoBanner || "",
-                  mondayOpen: location.hours.monday.openIntervals[0].start || "",
-                  mondayClose: location.hours.monday.openIntervals[0].end || "",
-                  tuesdayOpen: location.hours.tuesday.openIntervals[0].start || "",
-                  tuesdayClose: location.hours.tuesday.openIntervals[0].end || "",
-                  wednesdayOpen: location.hours.wednesday.openIntervals[0].start || "",
-                  wednesdayClose: location.hours.wednesday.openIntervals[0].end || "",
-                  thursdayOpen: location.hours.thursday.openIntervals[0].start || "",
-                  thursdayClose: location.hours.thursday.openIntervals[0].end || "",
-                  fridayOpen: location.hours.friday.openIntervals[0].start || "",
-                  fridayClose: location.hours.friday.openIntervals[0].end || "",
-                  saturdayOpen: location.hours.saturday.openIntervals[0].start || "",
-                  saturdayClose: location.hours.saturday.openIntervals[0].end || "",
-                  sundayOpen: location.hours.sunday.openIntervals[0].start || "",
-                  sundayClose: location.hours.sunday.openIntervals[0].end || "",
-
-                }}
-                onSubmit={async (values) => {
-                    await updateLocation(intId, values)
-                //   await new Promise((r) => setTimeout(r, 500))
-                //   alert(JSON.stringify(values, null, 2))
-                }}>
-                <Form>
-                  <div className="formGroup">
+                <span>
                   <label htmlFor="c_locationName">Name</label>
-                  <Field id="c_locationName" name="c_locationName" placeholder="Jane" />
-                  <br/>
+                  <Field id="c_locationName" name="c_locationName" placeholder="Hoots Wings" />
+                </span>
 
-                  <label htmlFor="c_locationShortName">Short name</label>
-                  <Field id="c_locationShortName" name="c_locationShortName" placeholder="Jane" />
-                  </div>
+                <span>
+                  <label htmlFor="c_locationShortName">Abbreviated name</label>
+                  <Field id="c_locationShortName" name="c_locationShortName" placeholder="Hoots" />
+                </span>
+              </div>
 
-                <div className="formGroup">
-                <label htmlFor="line1">Street</label>
-                  <Field id="line1" name="line1" placeholder="Jane" />
-                
+              <div className="formGroup">
+                <span>
+                  <label htmlFor="c_comingSoonText">Coming Soon Text</label>
+                  <Field id="c_comingSoonText" name="c_comingSoonText" placeholder="Opening in April" />
+                  <label htmlFor="c_shortDescription">Tagline</label>
+                  <Field id="c_shortDescription" name="c_shortDescription" placeholder="tagline" />
+                </span>
+              </div>
+
+              <div className="formGroup">
+                <span>
+                  <label htmlFor="line1">Street</label>
+                  <Field id="line1" name="line1" placeholder="Street Address" />
+                </span>
+                <span>
                   <label htmlFor="city">City</label>
                   <Field id="city" name="city" placeholder="City" />
+                </span>
+                <span>
+                  <label htmlFor="postalCode">Zip</label>
+                  <Field id="postalCode" type="number" name="postalCode" placeholder="00000" />
+                </span>
+
+                <span>
                   <label htmlFor="state">state</label>
                   <Field id="state" name="state" placeholder="state" />
-                <br />
-                </div>
-                <div className="formGroup">
-                    <HoursInput hours={location.hours} />
-                </div>
-                  <button type="submit">Submit</button>
-                </Form>
-              </Formik>
+                </span>
 
+                <span>
+                  <label htmlFor="mainPhone">Phone</label>
+                  <Field id="mainPhone" type="text" name="mainPhone" placeholder="000-000-0000" />
+                </span>
+              </div>
+
+              <h1>Links</h1>
+              <div className="formGroup">
+                <span>
+                  <label htmlFor="c_oloID">OLO ID</label>
+                  <Field id="c_oloID" name="c_oloID" type="text" placeholder=""/>
+                  <label htmlFor="orderUrl">Order URL</label>
+                  <Field id="orderUrl" name="orderUrl" placeholder="" />
+
+                  <label htmlFor="c_cateringURL">Catering URL</label>
+                  <Field id="c_cateringURL" name="c_cateringURL" placeholder="" />
+                </span>
+              </div>
+
+
+              <div className="formGroup">
+                <label htmlFor="c_mapUrl">Google Maps URL</label>
+                <Field id="c_mapUrl" name="c_mapUrl" placeholder="tagline" />
+              </div>
+
+              <div className="formGroup storeHours">
+                <h1>store hours</h1>
+                <HoursInput hours={location.hours} />
+              </div>
+
+              <div className="formGroup">
+              <p>Description</p>
+               <Field id="description" name="description" placeholder="description" as="textarea">Description</Field>
+                
+              </div>
+              <Button type="submit">Submit</Button>
+            </Form>
+          </Formik>
         ) : (
           <h1>Loading</h1>
         )}
       </main>
 
       <footer className={styles.footer}></footer>
-    </div>
+    </Box>
   )
 }
 export default withUrqlClient(createUrqlClient, { ssr: false })(Location)

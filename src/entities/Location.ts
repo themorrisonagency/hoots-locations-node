@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BaseEntity } from "typeorm"
 import { ObjectType, Field, Int } from "type-graphql"
-// import { Hours } from "../utils/HoursType";
 
 @ObjectType()
 @Entity()
@@ -23,7 +22,7 @@ export class Location extends BaseEntity {
   
   @Field()
   @Column({ nullable: true })
-  hours?: string
+  hours!: string
   
   @Field()
   @Column({ nullable: true })
@@ -72,6 +71,10 @@ export class Location extends BaseEntity {
   @Field()
   @Column({ nullable: true })
   c_promoUrl: string
+
+  @Field()
+  @Column({ nullable: true })
+  c_promoGraphic: string
   
   @Field()
   @Column({ nullable: true })
@@ -96,6 +99,18 @@ export class Location extends BaseEntity {
   @Field()
   @Column({ nullable: true })
   orderUrl: string
+
+  @Field()
+  @Column({ nullable: true })
+  c_masthead: string
+  
+  @Field()
+  @Column({ default: false })
+  visible: boolean
+
+  @Field()
+  @Column({ default: false })
+  comingSoon: boolean
   
   @Field()
   @Column({ nullable: true })
@@ -132,9 +147,18 @@ export class Location extends BaseEntity {
   @Field()
   @Column({ nullable: true})
   localPhone: string
+
+  @Field()
+  @Column({nullable: true})
+  c_comingSoonText: string
+
   @Field()
   @Column({ unique: true })
   yextId: string
+
+  @Field()
+  @Column({nullable: true})
+
 
   @Field()
   @CreateDateColumn()

@@ -169,6 +169,7 @@ const main = async () => {
    */
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
+      nullableByDefault: true,//So we can return null fields cause not every field will have a value.
       resolvers: [UserResolver, LocationResolver],
       validate: false,
     }),

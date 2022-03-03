@@ -1,8 +1,27 @@
-import { Arg, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql"
+import { Arg, Field, FieldResolver, InputType, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql"
 import { getConnection } from "typeorm"
 import { Location } from "../entities/Location"
+import {Convert24HourTo12Hour} from '../utils/timeConversion'
 import { LocationInput } from "../utils/LocationInput"
+import ShowOpenHours from "../utils/ShowOpenHours"
 
+@InputType()
+class UpdateVisibleInput {
+  @Field()
+  visible: boolean
+
+  @Field()
+  yextId: string
+}
+
+@InputType()
+class UpdateComingSoonInput {
+  @Field()
+  comingSoon: boolean
+
+  @Field()
+  yextId: string
+}
 @ObjectType()
 class LocationResponse {
   @Field(() => [Location])
@@ -11,6 +30,38 @@ class LocationResponse {
 
 @Resolver(Location)
 export class LocationResolver {
+  
+  @FieldResolver(() => String)
+  async hoursString(@Root() location: Location) {
+    let hours = JSON.parse(location.hours)
+    let openString = await ShowOpenHours(hours, location.timezone)
+    return openString
+  }
+
+  @FieldResolver(() => String)
+  async hours(@Root() location: Location) {
+    let hours = JSON.parse(location.hours)
+
+    await Object.keys(hours).map(async (day) => {
+      if (hours[day].openIntervals[0].start) {
+        hours[day].openIntervals[0].start = await Convert24HourTo12Hour(hours[day].openIntervals[0].start)
+        if (hours[day].openIntervals[0].start.length === 7) {
+          hours[day].openIntervals[0].start = '0' + hours[day].openIntervals[0].start
+        }
+      }
+    }) 
+    await Object.keys(hours).map(async (day) => {
+      if (hours[day].openIntervals[0].end) {
+
+        hours[day].openIntervals[0].end = await Convert24HourTo12Hour(hours[day].openIntervals[0].end)
+        if (hours[day].openIntervals[0].end.length === 7) {
+          hours[day].openIntervals[0].end = '0' + hours[day].openIntervals[0].end
+        }
+      }
+    }) 
+
+    return JSON.stringify(hours)
+  }
 
 
   @Query(() => [Location], {nullable: true})
@@ -34,25 +85,42 @@ export class LocationResolver {
     return locations
   }
 
-  @Query(() => Location)
+  @Query(() => Location, { nullable: true })
   async location(
     @Arg("yextId") yextId: string
-  ): Promise<Location[]> {
-    try {
-      const result = await getConnection()
-        .getRepository(Location)
-        .createQueryBuilder("location")
-        .where('"yextId" = :id', {id: yextId})
-        .getOne()
-        return result
-
-    } catch (err) {
-      return err
-    }
-
-
+  ) {
+    const location = await Location.find({where: {yextId}})
+    return location[0]
   }
 
+
+  @Mutation(() => Location)
+  async updateVisibility(
+    @Arg("input") input: UpdateVisibleInput): Promise<Boolean> {
+    await getConnection()
+    .createQueryBuilder()
+    .update(Location)
+    .set({ 
+      visible: input.visible
+    })
+    .where("yextId = :id", { id: input.yextId })
+    .execute();
+    return true
+  }
+
+  @Mutation(() => Location)
+  async updateComingSoon(
+    @Arg("input") input: UpdateComingSoonInput): Promise<Boolean> {
+    await getConnection()
+    .createQueryBuilder()
+    .update(Location)
+    .set({ 
+      comingSoon: input.comingSoon
+    })
+    .where("yextId = :id", { id: input.yextId })
+    .execute();
+    return true
+  }
 
   @Mutation(() => LocationResponse)
   async addLocation(@Arg("options") options: LocationInput): Promise<LocationResponse> {

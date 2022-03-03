@@ -19,97 +19,114 @@ export type Scalars = {
 
 export type FieldError = {
   __typename?: 'FieldError';
-  field: Scalars['String'];
-  message: Scalars['String'];
+  field?: Maybe<Scalars['String']>;
+  message?: Maybe<Scalars['String']>;
 };
 
 export type Location = {
   __typename?: 'Location';
-  address: Scalars['String'];
-  addressHidden: Scalars['Boolean'];
-  c_cateringURL: Scalars['String'];
-  c_infoBanner: Scalars['String'];
-  c_locationHighlights: Scalars['String'];
-  c_locationName: Scalars['String'];
-  c_locationShortName: Scalars['String'];
-  c_locationSlug: Scalars['String'];
-  c_mapTile: Scalars['String'];
-  c_mapUrl: Scalars['String'];
-  c_oloID: Scalars['String'];
-  c_promoUrl: Scalars['String'];
-  c_shortDescription: Scalars['String'];
-  categoryIds: Scalars['String'];
-  cityCoordinate: Scalars['String'];
-  createdAd: Scalars['DateTime'];
-  description: Scalars['String'];
-  displayCoordinate: Scalars['String'];
-  geocodedCoordinate: Scalars['String'];
-  hours: Scalars['String'];
-  id: Scalars['Int'];
-  isoRegionCode: Scalars['String'];
-  localPhone: Scalars['String'];
-  mainPhone: Scalars['String'];
-  meta: Scalars['String'];
-  name: Scalars['String'];
-  orderUrl: Scalars['String'];
-  routableCoordinate: Scalars['String'];
-  timeZoneUtcOffset: Scalars['String'];
-  timezone: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
-  yextDisplayCoordinate: Scalars['String'];
-  yextId: Scalars['String'];
-  yextRoutableCoordinate: Scalars['String'];
+  address?: Maybe<Scalars['String']>;
+  addressHidden?: Maybe<Scalars['Boolean']>;
+  c_cateringURL?: Maybe<Scalars['String']>;
+  c_comingSoonText?: Maybe<Scalars['String']>;
+  c_infoBanner?: Maybe<Scalars['String']>;
+  c_locationHighlights?: Maybe<Scalars['String']>;
+  c_locationName?: Maybe<Scalars['String']>;
+  c_locationShortName?: Maybe<Scalars['String']>;
+  c_locationSlug?: Maybe<Scalars['String']>;
+  c_mapTile?: Maybe<Scalars['String']>;
+  c_mapUrl?: Maybe<Scalars['String']>;
+  c_masthead?: Maybe<Scalars['String']>;
+  c_oloID?: Maybe<Scalars['String']>;
+  c_promoGraphic?: Maybe<Scalars['String']>;
+  c_promoUrl?: Maybe<Scalars['String']>;
+  c_shortDescription?: Maybe<Scalars['String']>;
+  categoryIds?: Maybe<Scalars['String']>;
+  cityCoordinate?: Maybe<Scalars['String']>;
+  comingSoon?: Maybe<Scalars['Boolean']>;
+  createdAd?: Maybe<Scalars['DateTime']>;
+  description?: Maybe<Scalars['String']>;
+  displayCoordinate?: Maybe<Scalars['String']>;
+  geocodedCoordinate?: Maybe<Scalars['String']>;
+  hours?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['Int']>;
+  isoRegionCode?: Maybe<Scalars['String']>;
+  localPhone?: Maybe<Scalars['String']>;
+  mainPhone?: Maybe<Scalars['String']>;
+  meta?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  orderUrl?: Maybe<Scalars['String']>;
+  routableCoordinate?: Maybe<Scalars['String']>;
+  timeZoneUtcOffset?: Maybe<Scalars['String']>;
+  timezone?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  visible?: Maybe<Scalars['Boolean']>;
+  yextDisplayCoordinate?: Maybe<Scalars['String']>;
+  yextId?: Maybe<Scalars['String']>;
+  yextRoutableCoordinate?: Maybe<Scalars['String']>;
 };
 
 export type LocationInput = {
-  hours: Scalars['String'];
+  hours?: InputMaybe<Scalars['String']>;
 };
 
 export type LocationResponse = {
   __typename?: 'LocationResponse';
-  location: Array<Location>;
+  location?: Maybe<Array<Maybe<Location>>>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addLocation: LocationResponse;
-  changePassword: UserResponse;
-  forgotPassword: Scalars['Boolean'];
-  login: UserResponse;
-  logout: Scalars['Boolean'];
-  register: UserResponse;
+  addLocation?: Maybe<LocationResponse>;
+  changePassword?: Maybe<UserResponse>;
+  forgotPassword?: Maybe<Scalars['Boolean']>;
+  login?: Maybe<UserResponse>;
+  logout?: Maybe<Scalars['Boolean']>;
+  register?: Maybe<UserResponse>;
+  updateComingSoon?: Maybe<Location>;
+  updateVisibility?: Maybe<Location>;
 };
 
 
 export type MutationAddLocationArgs = {
-  options: LocationInput;
+  options?: InputMaybe<LocationInput>;
 };
 
 
 export type MutationChangePasswordArgs = {
-  newPassword: Scalars['String'];
-  token: Scalars['String'];
+  newPassword?: InputMaybe<Scalars['String']>;
+  token?: InputMaybe<Scalars['String']>;
 };
 
 
 export type MutationForgotPasswordArgs = {
-  email: Scalars['String'];
+  email?: InputMaybe<Scalars['String']>;
 };
 
 
 export type MutationLoginArgs = {
-  password: Scalars['String'];
-  usernameOrEmail: Scalars['String'];
+  password?: InputMaybe<Scalars['String']>;
+  usernameOrEmail?: InputMaybe<Scalars['String']>;
 };
 
 
 export type MutationRegisterArgs = {
-  options: UsernamePasswordInput;
+  options?: InputMaybe<UsernamePasswordInput>;
+};
+
+
+export type MutationUpdateComingSoonArgs = {
+  input?: InputMaybe<UpdateComingSoonInput>;
+};
+
+
+export type MutationUpdateVisibilityArgs = {
+  input?: InputMaybe<UpdateVisibleInput>;
 };
 
 export type Query = {
   __typename?: 'Query';
-  location: Location;
+  location?: Maybe<Location>;
   locations?: Maybe<Array<Location>>;
   me?: Maybe<User>;
   teachers?: Maybe<Array<User>>;
@@ -117,20 +134,30 @@ export type Query = {
 
 
 export type QueryLocationArgs = {
-  yextId: Scalars['String'];
+  yextId?: InputMaybe<Scalars['String']>;
+};
+
+export type UpdateComingSoonInput = {
+  comingSoon?: InputMaybe<Scalars['Boolean']>;
+  yextId?: InputMaybe<Scalars['String']>;
+};
+
+export type UpdateVisibleInput = {
+  visible?: InputMaybe<Scalars['Boolean']>;
+  yextId?: InputMaybe<Scalars['String']>;
 };
 
 export type User = {
   __typename?: 'User';
-  createdAt: Scalars['DateTime'];
-  email: Scalars['String'];
-  firstName: Scalars['String'];
-  fullName: Scalars['String'];
-  id: Scalars['Int'];
-  isAdmin: Scalars['Boolean'];
-  lastName: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
-  username: Scalars['String'];
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  fullName?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['Int']>;
+  isAdmin?: Maybe<Scalars['Boolean']>;
+  lastName?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  username?: Maybe<Scalars['String']>;
 };
 
 export type UserResponse = {
@@ -140,49 +167,90 @@ export type UserResponse = {
 };
 
 export type UsernamePasswordInput = {
-  email: Scalars['String'];
-  firstName: Scalars['String'];
-  lastName: Scalars['String'];
-  password: Scalars['String'];
-  username: Scalars['String'];
+  email?: InputMaybe<Scalars['String']>;
+  firstName?: InputMaybe<Scalars['String']>;
+  lastName?: InputMaybe<Scalars['String']>;
+  password?: InputMaybe<Scalars['String']>;
+  username?: InputMaybe<Scalars['String']>;
 };
 
-export type LocationSnippetFragment = { __typename?: 'Location', address: string, description: string, hours: string, name: string, c_cateringURL: string, c_infoBanner: string, c_locationHighlights: string, c_locationName: string, c_locationShortName: string, c_locationSlug: string, c_mapTile: string, c_mapUrl: string, c_oloID: string, c_promoUrl: string, c_shortDescription: string, geocodedCoordinate: string, mainPhone: string, orderUrl: string };
+export type LocationSnippetFragment = { __typename?: 'Location', c_oloID?: string | null, address?: string | null, description?: string | null, hours?: string | null, name?: string | null, c_cateringURL?: string | null, c_locationHighlights?: string | null, c_locationShortName?: string | null, c_locationSlug?: string | null, c_locationName?: string | null, c_mapTile?: string | null, c_promoGraphic?: string | null, c_masthead?: string | null, c_mapUrl?: string | null, visible?: boolean | null, comingSoon?: boolean | null, c_comingSoonText?: string | null, c_promoUrl?: string | null, c_shortDescription?: string | null, geocodedCoordinate?: string | null, mainPhone?: string | null, orderUrl?: string | null, yextId?: string | null };
+
+export type UpdateComingSoonMutationVariables = Exact<{
+  input: UpdateComingSoonInput;
+}>;
+
+
+export type UpdateComingSoonMutation = { __typename?: 'Mutation', updateComingSoon?: { __typename?: 'Location', comingSoon?: boolean | null } | null };
+
+export type UpdateVisibilityMutationVariables = Exact<{
+  input: UpdateVisibleInput;
+}>;
+
+
+export type UpdateVisibilityMutation = { __typename?: 'Mutation', updateVisibility?: { __typename?: 'Location', visible?: boolean | null } | null };
 
 export type LocationQueryVariables = Exact<{
   yextId: Scalars['String'];
 }>;
 
 
-export type LocationQuery = { __typename?: 'Query', location: { __typename?: 'Location', address: string, description: string, hours: string, name: string, c_cateringURL: string, c_infoBanner: string, c_locationHighlights: string, c_locationName: string, c_locationShortName: string, c_locationSlug: string, c_mapTile: string, c_mapUrl: string, c_oloID: string, c_promoUrl: string, c_shortDescription: string, geocodedCoordinate: string, mainPhone: string, orderUrl: string } };
+export type LocationQuery = { __typename?: 'Query', location?: { __typename?: 'Location', c_oloID?: string | null, address?: string | null, description?: string | null, hours?: string | null, name?: string | null, c_cateringURL?: string | null, c_locationHighlights?: string | null, c_locationShortName?: string | null, c_locationSlug?: string | null, c_locationName?: string | null, c_mapTile?: string | null, c_promoGraphic?: string | null, c_masthead?: string | null, c_mapUrl?: string | null, visible?: boolean | null, comingSoon?: boolean | null, c_comingSoonText?: string | null, c_promoUrl?: string | null, c_shortDescription?: string | null, geocodedCoordinate?: string | null, mainPhone?: string | null, orderUrl?: string | null, yextId?: string | null } | null };
 
 export type LocationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type LocationsQuery = { __typename?: 'Query', locations?: Array<{ __typename?: 'Location', address: string, description: string, hours: string, name: string, c_cateringURL: string, c_infoBanner: string, c_locationHighlights: string, c_locationName: string, c_locationShortName: string, c_locationSlug: string, c_mapTile: string, c_mapUrl: string, c_oloID: string, c_promoUrl: string, c_shortDescription: string, geocodedCoordinate: string, mainPhone: string, orderUrl: string }> | null };
+export type LocationsQuery = { __typename?: 'Query', locations?: Array<{ __typename?: 'Location', c_oloID?: string | null, address?: string | null, description?: string | null, hours?: string | null, name?: string | null, c_cateringURL?: string | null, c_locationHighlights?: string | null, c_locationShortName?: string | null, c_locationSlug?: string | null, c_locationName?: string | null, c_mapTile?: string | null, c_promoGraphic?: string | null, c_masthead?: string | null, c_mapUrl?: string | null, visible?: boolean | null, comingSoon?: boolean | null, c_comingSoonText?: string | null, c_promoUrl?: string | null, c_shortDescription?: string | null, geocodedCoordinate?: string | null, mainPhone?: string | null, orderUrl?: string | null, yextId?: string | null }> | null };
 
 export const LocationSnippetFragmentDoc = gql`
     fragment LocationSnippet on Location {
+  c_oloID
   address
   description
   hours
   name
   c_cateringURL
-  c_infoBanner
   c_locationHighlights
-  c_locationName
   c_locationShortName
   c_locationSlug
+  c_locationName
   c_mapTile
+  c_promoGraphic
+  c_masthead
   c_mapUrl
-  c_oloID
+  visible
+  comingSoon
+  c_comingSoonText
   c_promoUrl
   c_shortDescription
   geocodedCoordinate
   mainPhone
   orderUrl
+  yextId
 }
     `;
+export const UpdateComingSoonDocument = gql`
+    mutation updateComingSoon($input: UpdateComingSoonInput!) {
+  updateComingSoon(input: $input) {
+    comingSoon
+  }
+}
+    `;
+
+export function useUpdateComingSoonMutation() {
+  return Urql.useMutation<UpdateComingSoonMutation, UpdateComingSoonMutationVariables>(UpdateComingSoonDocument);
+};
+export const UpdateVisibilityDocument = gql`
+    mutation UpdateVisibility($input: UpdateVisibleInput!) {
+  updateVisibility(input: $input) {
+    visible
+  }
+}
+    `;
+
+export function useUpdateVisibilityMutation() {
+  return Urql.useMutation<UpdateVisibilityMutation, UpdateVisibilityMutationVariables>(UpdateVisibilityDocument);
+};
 export const LocationDocument = gql`
     query Location($yextId: String!) {
   location(yextId: $yextId) {

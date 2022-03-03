@@ -1,0 +1,5 @@
+mutation updateComingSoon($input: UpdateComingSoonInput!) {
+      updateComingSoon(input: $input) {
+    comingSoon
+  }
+}

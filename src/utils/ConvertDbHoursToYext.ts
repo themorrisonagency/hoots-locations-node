@@ -1,4 +1,4 @@
-import timeConversion from "./timeConversion"
+import {timeConversion} from "./timeConversion"
 
 type dbHoursObj = {
   monOpen: string

@@ -1,20 +1,25 @@
 fragment LocationSnippet on Location {
+    c_oloID
     address
     description
     hours
     name
     c_cateringURL
-    c_infoBanner
     c_locationHighlights
-    c_locationName
     c_locationShortName
     c_locationSlug
+    c_locationName
     c_mapTile
+    c_promoGraphic
+    c_masthead
     c_mapUrl
-    c_oloID
+    visible
+    comingSoon
+    c_comingSoonText
     c_promoUrl
     c_shortDescription
     geocodedCoordinate
     mainPhone
     orderUrl
+    yextId
 }
