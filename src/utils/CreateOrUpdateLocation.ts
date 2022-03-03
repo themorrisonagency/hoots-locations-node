@@ -6,11 +6,9 @@ export default async function CreateOrUpdateLocation(obj: any, id: string) {
     where: { yextId: id },
     select: ["id"],
   })
-  console.log("exists", exists[0])
 
   try {
     if (!exists[0]) {
-      console.log("obj", obj)
       obj.yextId = obj.meta.id
       await getConnection()
         .createQueryBuilder()

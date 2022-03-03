@@ -22,4 +22,5 @@ fragment LocationSnippet on Location {
     mainPhone
     orderUrl
     yextId
+    hoursString
 }

@@ -5,14 +5,11 @@ import { withUrqlClient } from "next-urql"
 import { useLocationQuery } from "../../src/generated/graphql"
 import { Formik, Field, Form, FormikHelpers } from "formik"
 import { useRouter } from "next/router"
-import ConvertToJson from "../../src/utils/ConvertToJson"
 import { useState } from "react"
+import { ConvertToJson } from "../../src/utils/ConvertToJson"
 import HoursInput from "../../src/components/HoursInput"
 import axios from "axios"
 import { Box, Heading, Flex, Button, FormControl, FormLabel, FormErrorMessage, FormHelperText } from "@chakra-ui/react"
-import { Input } from "@chakra-ui/input"
-
-import Convert24HourTo12 from "../../src/utils/Convert24HourTo12"
 
 async function timeConversion(s) {
   const ampm = s.slice(-2).toUpperCase()
@@ -32,86 +29,7 @@ async function timeConversion(s) {
   }
   return "Error: AM/PM format is not valid"
 }
-async function updateLocation(id, location) {
-  // const url = `https://api.yext.com/v2/accounts/me/entities/${id}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`
-  const url = `http://localhost:4000/hooks/yext/${id}`
-  let hoursObject = {
-    monday: {
-      openIntervals: [{ start: location.mondayOpen, end: location.mondayClose }],
-    },
-    tuesday: {
-      openIntervals: [{ start: location.tuesdayOpen, end: location.tuesdayClose }],
-    },
-    wednesday: {
-      openIntervals: [{ start: location.wednesdayOpen, end: location.wednesdayClose }],
-    },
-    thursday: {
-      openIntervals: [{ start: location.thursdayOpen, end: location.thursdayClose }],
-    },
-    friday: {
-      openIntervals: [{ start: location.fridayOpen, end: location.fridayClose }],
-    },
-    saturday: {
-      openIntervals: [{ start: location.saturdayOpen, end: location.saturdayClose }],
-    },
-    sunday: {
-      openIntervals: [{ start: location.sundayOpen, end: location.sundayClose }],
-    },
-  }
-  await Object.keys(hoursObject).map(async (day) => {
-    if (hoursObject[day].openIntervals[0].start) {
-      hoursObject[day].openIntervals[0].start = await timeConversion(hoursObject[day].openIntervals[0].start)
-    }
-  })
-  await Object.keys(hoursObject).map(async (day) => {
-    if (hoursObject[day].openIntervals[0].end) {
-      hoursObject[day].openIntervals[0].end = await timeConversion(hoursObject[day].openIntervals[0].end)
-    }
-  })
 
-  let deleteKeys = [
-    "fridayClose",
-    "fridayOpen",
-    "line1",
-    "mondayClose",
-    "mondayOpen",
-    "postalCode",
-    "saturdayClose",
-    "saturdayOpen",
-    "state",
-    "sundayClose",
-    "sundayOpen",
-    "thursdayClose",
-    "thursdayOpen",
-    "tuesdayClose",
-    "tuesdayOpen",
-    "wednesdayClose",
-    "wednesdayOpen",
-    "city",
-    "visible",
-    "comingSoon"
-  ]
-
-  let obj = {
-    address: {
-      line1: location.line1,
-      city: location.city,
-      region: location.region,
-      postalCode: location.postalCode,
-    },
-    hours: hoursObject,
-    orderUrl: {
-      url: location.orderUrl,
-      preferDisplayUrl: false,
-    },
-    c_oloID: location.c_oloID.toString() || "",
-    ...location,
-  }
-  deleteKeys.forEach((key) => {
-    delete obj[key]
-  })
-  const result = await axios.put(url, obj)
-}
 const Location = () => {
   const router = useRouter()
   const intId = typeof router.query.id === "string" ? router.query.id : -1
@@ -149,7 +67,6 @@ const Location = () => {
     c_promoGraphic,
     orderUrl,
   } = location
-  console.log("visibnle", visible)
 
   if (!fetching && data && location == "") {
     data.location.formatted = false
@@ -160,9 +77,92 @@ const Location = () => {
         data.location[key] = data.location[key]
       }
     })
+    let highlights = []
+    console.log('data',data.location.c_locationHighlights[0])
     setLocation(data.location)
   }
 
+  async function updateLocation(id, location) {
+    const url = `http://localhost:4000/hooks/yext/${id}`
+    let hoursObject = {
+      monday: {
+        openIntervals: [{ start: location.mondayOpen, end: location.mondayClose }],
+      },
+      tuesday: {
+        openIntervals: [{ start: location.tuesdayOpen, end: location.tuesdayClose }],
+      },
+      wednesday: {
+        openIntervals: [{ start: location.wednesdayOpen, end: location.wednesdayClose }],
+      },
+      thursday: {
+        openIntervals: [{ start: location.thursdayOpen, end: location.thursdayClose }],
+      },
+      friday: {
+        openIntervals: [{ start: location.fridayOpen, end: location.fridayClose }],
+      },
+      saturday: {
+        openIntervals: [{ start: location.saturdayOpen, end: location.saturdayClose }],
+      },
+      sunday: {
+        openIntervals: [{ start: location.sundayOpen, end: location.sundayClose }],
+      },
+    }
+    await Object.keys(hoursObject).map(async (day) => {
+      if (hoursObject[day].openIntervals[0].start) {
+        hoursObject[day].openIntervals[0].start = await timeConversion(hoursObject[day].openIntervals[0].start)
+      }
+    })
+    await Object.keys(hoursObject).map(async (day) => {
+      if (hoursObject[day].openIntervals[0].end) {
+        hoursObject[day].openIntervals[0].end = await timeConversion(hoursObject[day].openIntervals[0].end)
+      }
+    })
+
+    let deleteKeys = [
+      "fridayClose",
+      "fridayOpen",
+      "line1",
+      "mondayClose",
+      "mondayOpen",
+      "postalCode",
+      "saturdayClose",
+      "saturdayOpen",
+      "state",
+      "sundayClose",
+      "sundayOpen",
+      "thursdayClose",
+      "thursdayOpen",
+      "tuesdayClose",
+      "tuesdayOpen",
+      "wednesdayClose",
+      "wednesdayOpen",
+      "city",
+      "visible",
+      "comingSoon",
+    ]
+
+    location.orderUrl = {
+      url: location.orderUrl,
+      preferDisplayUrl: false,
+    }
+    let obj = {
+      address: {
+        line1: location.line1,
+        city: location.city,
+        region: location.region,
+        postalCode: location.postalCode,
+      },
+      hours: hoursObject,
+
+      c_oloID: location.c_oloID.toString() || "",
+      ...location,
+    }
+    deleteKeys.forEach((key) => {
+      delete obj[key]
+    })
+    const result = await axios.put(url, obj)
+    router.reload()
+  }
   return (
     <Box bgColor="#fef0e9">
       <Head>
@@ -204,6 +204,7 @@ const Location = () => {
               orderUrl: orderUrl.url,
               visible,
               c_comingSoonText,
+              c_locationHighlights,
               mondayOpen: hours.monday.openIntervals[0].start || "",
               mondayClose: hours.monday.openIntervals[0].end || "",
               tuesdayOpen: hours.tuesday.openIntervals[0].start || "",
@@ -221,8 +222,6 @@ const Location = () => {
             }}
             onSubmit={async (values) => {
               await updateLocation(intId, values)
-              //   await new Promise((r) => setTimeout(r, 500))
-              //   alert(JSON.stringify(values, null, 2))
             }}>
             <Form>
               <div className="formGroup">
@@ -277,7 +276,7 @@ const Location = () => {
               <div className="formGroup">
                 <span>
                   <label htmlFor="c_oloID">OLO ID</label>
-                  <Field id="c_oloID" name="c_oloID" type="text" placeholder=""/>
+                  <Field id="c_oloID" name="c_oloID" type="text" placeholder="" />
                   <label htmlFor="orderUrl">Order URL</label>
                   <Field id="orderUrl" name="orderUrl" placeholder="" />
 
@@ -285,7 +284,6 @@ const Location = () => {
                   <Field id="c_cateringURL" name="c_cateringURL" placeholder="" />
                 </span>
               </div>
-
 
               <div className="formGroup">
                 <label htmlFor="c_mapUrl">Google Maps URL</label>
@@ -298,9 +296,34 @@ const Location = () => {
               </div>
 
               <div className="formGroup">
-              <p>Description</p>
-               <Field id="description" name="description" placeholder="description" as="textarea">Description</Field>
-                
+                <p>Description</p>
+                <Field id="description" name="description" placeholder="description" as="textarea">
+                  Description
+                </Field>
+                <div role="group" aria-labelledby="checkbox-group">
+                  <label>
+                    <Field type="checkbox" name="c_locationHighlights" value="BEER_AND_WINE" />
+                    Beer & Wine
+                  </label>
+                  <label>
+                    <Field type="checkbox" name="c_locationHighlights" value="DELIVERY" />
+                    Delivery
+                  </label>
+                  <label>
+                    <Field type="checkbox" name="c_locationHighlights" value="CARRYOUT" />
+                    Carryout
+                  </label>
+
+                  <label>
+                    <Field type="checkbox" name="c_locationHighlights" value="PATIO_SEATING" />
+                    Patio Seating
+                  </label>
+
+                  <label>
+                    <Field type="checkbox" name="c_locationHighlights" value="PET_FRIENDLY" />
+                    Pet Friendly
+                  </label>
+                </div>
               </div>
               <Button type="submit">Submit</Button>
             </Form>

@@ -33,10 +33,13 @@ export default async function ShowOpenHours(hours: OpenHoursType, timezone: stri
     // let str = ""
     // (state === 1) ? str = `Open closing at `
     const currentHour = oh.toLocaleJSON().find(day => day.active === true)
-    if (oh.getState === 1){
-        return `Open - Closing at ${oh.currentDate}`
+    console.log(oh.toLocaleJSON().find(day => day.active).times)
+    console.log('og', oh.getState())
+    if (oh.getState() === 1){
+        return `Open - Closing at ${currentHour.times[0].until}`
     } else {
-        if(new Date().toLocaleTimeString("en-US", {timeZone: timezone}) > currentHour.times[0].from){
+        // Check opening hours in stores time zone vs current time.
+        if(new Date().toLocaleTimeString("en-US", {timeZone: timezone}) > new Date(currentHour.times[0].from).toLocaleTimeString("en-US", {timeZone: timezone})){
             return `Closed - Opening tomorrow at ${oh.toLocaleJSON()[1].times[0].from}`
         }
         return `Closed - Opening at ${currentHour.times[0].from}`

@@ -32,6 +32,11 @@ class LocationResponse {
 export class LocationResolver {
   
   @FieldResolver(() => String)
+  async c_locationHighlights(@Root() location: Location) {
+    return location.c_locationHighlights.replace(/{/g, '[').replace(/}/g, ']')
+  }
+
+  @FieldResolver(() => String)
   async hoursString(@Root() location: Location) {
     let hours = JSON.parse(location.hours)
     let openString = await ShowOpenHours(hours, location.timezone)
