@@ -127,8 +127,8 @@ export class LocationResolver {
     return true
   }
 
-  @Mutation(() => LocationResponse)
-  async addLocation(@Arg("options") options: LocationInput): Promise<LocationResponse> {
+  @Mutation(() => Boolean)
+  async addLocation(@Arg("options") options: LocationInput): Promise<Boolean> {
     let location
     try {
       const result = await getConnection()
@@ -145,6 +145,7 @@ export class LocationResolver {
       return err
     }
 
-    return { location }
+    console.log('location', location.id)
+    return true
   }
 }

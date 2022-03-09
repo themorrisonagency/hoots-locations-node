@@ -2,14 +2,15 @@ import Head from "next/head"
 import styles from "../../styles/Home.module.css"
 import { createUrqlClient } from "../../src/utils/createUrqlClient"
 import { withUrqlClient } from "next-urql"
-import { useLocationQuery } from "../../src/generated/graphql"
+import { useAddLocationMutation } from "../../src/generated/graphql"
 import { Formik, Field, Form, FormikHelpers } from "formik"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import { ConvertToJson } from "../../src/utils/ConvertToJson"
 import HoursInput from "../../src/components/HoursInput"
 import axios from "axios"
-import { Box, Heading, Flex, Button, FormControl, FormLabel, FormErrorMessage, FormHelperText, Input } from "@chakra-ui/react"
+import { Box, Heading, Flex, Button, FormControl, FormLabel, FormErrorMessage, FormHelperText, Input, useToast } from "@chakra-ui/react"
+import { options } from "pg/lib/defaults"
 
 async function timeConversion(s) {
   const ampm = s.slice(-2).toUpperCase()
@@ -32,16 +33,62 @@ async function timeConversion(s) {
 
 const Location = () => {
   const router = useRouter()
-  const intId = typeof router.query.id === "string" ? router.query.id : -1
-  const [{ data, error, fetching }] = useLocationQuery({
-    pause: intId === -1, // If we don't have an id, then stop the query.
-    variables: {
-      yextId: router.query.id,
-    },
-  })
-  const [location, setLocation] = useState("")
 
-  const [openHours, setOpeningHours] = useState([])
+  const toast = useToast()
+  const [newLocation, setNewLocation] = useAddLocationMutation()
+  const locationTemplate = {
+      name: 'Hoots Wings',
+      address: {
+          line1: '',
+          city: '',
+          region: '',
+          postalCode: ''
+      },
+      description: '',
+      hours: {
+          monday: {
+              isClosed: true
+          },
+          tuesday: {
+            isClosed: true
+        },
+        wednesday: {
+            isClosed: true
+        },
+        thursday: {
+            isClosed: true
+        },
+        friday: {
+            isClosed: true
+        },
+        saturday: {
+            isClosed: true
+        },
+        sunday: {
+            isClosed: true
+        }
+      },
+      c_cateringURL: '',
+      c_infoBanner: '',
+      c_locationHighlights: [],
+      c_locationName: '',
+      c_locationShortName: '',
+      c_locationSlug: '',
+      c_mapTile: '',
+      c_mapUrl: '',
+      c_oloID: '',
+      c_promoUrl: '',
+      c_shortDescription: '',
+      geocodedCoordinate: '',
+      mainPhone: '',
+      visible: false,
+      c_comingSoonText: '',
+      comingSoon: false,
+      c_masthead: '',
+      c_promoGraphic: '',
+      orderUrl: '',
+  }
+
   const {
     address,
     description,
@@ -66,24 +113,12 @@ const Location = () => {
     c_masthead,
     c_promoGraphic,
     orderUrl,
-  } = location
+  } = locationTemplate
 
-  if (!fetching && data && location == "") {
-    data.location.formatted = false
-    Object.keys(data.location).forEach((key) => {
-      try {
-        data.location[key] = JSON.parse(data.location[key])
-      } catch {
-        data.location[key] = data.location[key]
-      }
-    })
-    let highlights = []
-    console.log("data", data.location.c_locationHighlights[0])
-    setLocation(data.location)
-  }
 
-  async function updateLocation(id, location) {
-    const url = `http://localhost:4000/hooks/yext/${id}`
+
+  async function addLocation(location) {
+    const url = `http://localhost:4000/hooks/yext`
     let hoursObject = {
       monday: {
         openIntervals: [{ start: location.mondayOpen, end: location.mondayClose }],
@@ -139,6 +174,8 @@ const Location = () => {
       "city",
       "visible",
       "comingSoon",
+      "yextId",
+      "region"
     ]
 
     location.orderUrl = {
@@ -152,7 +189,10 @@ const Location = () => {
         region: location.region,
         postalCode: location.postalCode,
       },
-      hours: hoursObject,
+      meta: {
+          id: location.c_locationName.replaceAll(' ', '-').toLowerCase()
+      },
+    //   hours: hoursObject,
 
       c_oloID: location.c_oloID.toString() || "",
       ...location,
@@ -160,8 +200,23 @@ const Location = () => {
     deleteKeys.forEach((key) => {
       delete obj[key]
     })
-    const result = await axios.put(url, obj)
-    router.reload()
+    const result = await axios.post(url, obj)
+
+    toast({
+        duration: null,
+        position: 'top-right',
+        title: `${result.data.message || 'Success'}`,
+        status: (result.data.type == 'FATAL_ERROR') ? 'error' : 'success',
+        isClosable: true,
+      })
+      console.log(result)
+
+      if (result.data.redirect){
+        setTimeout(()=> {
+          router.push(result.data.redirect)
+        }, 3000)
+      }
+    // router.reload()
   }
   return (
     <Box bgColor="#fef0e9">
@@ -173,63 +228,62 @@ const Location = () => {
 
       <Box bgColor={"white"} p={5}>
         <Flex justifyContent={"space-between"}>
-          <Heading>{location.c_locationName}</Heading>
+          <Heading>Add new location</Heading>
           <Heading>Hoots Wings</Heading>
         </Flex>
       </Box>
       <main className={styles.main}>
-        {!fetching && location ? (
           <Formik
-            initialValues={{
-              c_locationName,
-              c_locationShortName,
-              line1: address.line1 || "",
-              city: address.city || "",
-              region: address.region || "",
-              postalCode: address.postalCode || "",
-              description,
-              name,
-              c_cateringURL,
-              c_infoBanner,
-              c_locationName,
-              c_locationShortName,
-              c_locationSlug,
-              c_mapTile,
-              c_mapUrl,
-              c_oloID: c_oloID.toString(),
-              c_promoUrl,
-              c_shortDescription,
-              geocodedCoordinate,
-              mainPhone,
-              orderUrl: orderUrl.url,
-              visible,
-              c_comingSoonText,
-              c_locationHighlights,
-              mondayOpen: hours.monday.openIntervals ? hours.monday.openIntervals[0].start : "",
-              mondayClose: hours.monday.openIntervals ? hours.monday.openIntervals[0].end : "",
-              tuesdayOpen: hours.tuesday.openIntervals ? hours.tuesday.openIntervals[0].start : "",
-              tuesdayClose: hours.tuesday.openIntervals ? hours.tuesday.openIntervals[0].end : "",
-              wednesdayOpen: hours.wednesday.openIntervals ? hours.wednesday.openIntervals[0].start : "",
-              wednesdayClose: hours.wednesday.openIntervals ? hours.wednesday.openIntervals[0].end : "",
-              thursdayOpen: hours.thursday.openIntervals ? hours.thursday.openIntervals[0].start : "",
-              thursdayClose: hours.thursday.openIntervals ? hours.thursday.openIntervals[0].end : "",
-              fridayOpen: hours.friday.openIntervals ? hours.friday.openIntervals[0].start : "",
-              fridayClose: hours.friday.openIntervals ? hours.friday.openIntervals[0].end : "",
-              saturdayOpen: hours.saturday.openIntervals ? hours.saturday.openIntervals[0].start : "",
-              saturdayClose: hours.saturday.openIntervals ? hours.saturday.openIntervals[0].end : "",
-              sundayOpen: hours.sunday.openIntervals ? hours.sunday.openIntervals[0].start : "",
-              sundayClose: hours.sunday.openIntervals ? hours.sunday.openIntervals[0].end : "",
-            }}
-            onSubmit={async (values) => {
-              await updateLocation(intId, values)
-            }}>
+                      initialValues={{
+                        c_locationName,
+                        c_locationShortName,
+                        line1: address.line1 || "",
+                        city: address.city || "",
+                        region: address.region || "",
+                        postalCode: address.postalCode || "",
+                        description,
+                        name,
+                        c_cateringURL,
+                        c_infoBanner,
+                        c_locationName,
+                        c_locationShortName,
+                        c_locationSlug,
+                        c_mapTile,
+                        c_mapUrl,
+                        c_oloID: c_oloID.toString(),
+                        c_promoUrl,
+                        c_shortDescription,
+                        geocodedCoordinate,
+                        mainPhone,
+                        orderUrl: orderUrl.url,
+                        visible,
+                        c_comingSoonText,
+                        c_locationHighlights,
+                        mondayOpen: hours.monday.openIntervals ? hours.monday.openIntervals[0].start : "",
+                        mondayClose: hours.monday.openIntervals ? hours.monday.openIntervals[0].end : "",
+                        tuesdayOpen: hours.tuesday.openIntervals ? hours.tuesday.openIntervals[0].start : "",
+                        tuesdayClose: hours.tuesday.openIntervals ? hours.tuesday.openIntervals[0].end : "",
+                        wednesdayOpen: hours.wednesday.openIntervals ? hours.wednesday.openIntervals[0].start : "",
+                        wednesdayClose: hours.wednesday.openIntervals ? hours.wednesday.openIntervals[0].end : "",
+                        thursdayOpen: hours.thursday.openIntervals ? hours.thursday.openIntervals[0].start : "",
+                        thursdayClose: hours.thursday.openIntervals ? hours.thursday.openIntervals[0].end : "",
+                        fridayOpen: hours.friday.openIntervals ? hours.friday.openIntervals[0].start : "",
+                        fridayClose: hours.friday.openIntervals ? hours.friday.openIntervals[0].end : "",
+                        saturdayOpen: hours.saturday.openIntervals ? hours.saturday.openIntervals[0].start : "",
+                        saturdayClose: hours.saturday.openIntervals ? hours.saturday.openIntervals[0].end : "",
+                        sundayOpen: hours.sunday.openIntervals ? hours.sunday.openIntervals[0].start : "",
+                        sundayClose: hours.sunday.openIntervals ? hours.sunday.openIntervals[0].end : "",
+                      }}
+                      onSubmit={async (values) => {
+                        await addLocation(values)
+                      }}>
             <Form>
               <Box>
                 <h1>basic info</h1>
                 <Flex justifyContent={"space-between"}>
                   <span>
                     <label htmlFor="c_locationName">Name</label>
-                    <Input as={Field} id="c_locationName" name="c_locationName" placeholder="Hoots Wings" />
+                    <Input as={Field} id="c_locationName" name="c_locationName" placeholder="Hoots Wings" isRequired />
                   </span>
 
                   <span>
@@ -252,20 +306,20 @@ const Location = () => {
                 <Flex flexWrap={"wrap"} justifyContent="space-between">
                   <span>
                     <label htmlFor="line1">Street</label>
-                    <Input as={Field} id="line1" name="line1" placeholder="Street Address" />
+                    <Input as={Field} id="line1" name="line1" placeholder="Street Address" required />
                   </span>
                   <span>
                     <label htmlFor="city">City</label>
-                    <Input as={Field} id="city" name="city" placeholder="City" />
+                    <Input as={Field} id="city" name="city" placeholder="City" required />
                   </span>
                   <span>
                     <label htmlFor="postalCode">Zip</label>
-                    <Input as={Field} id="postalCode" type="number" name="postalCode" placeholder="00000" />
+                    <Input as={Field} id="postalCode" type="number" name="postalCode" placeholder="00000" required />
                   </span>
 
                   <span>
                     <label htmlFor="region">state</label>
-                    <Input as={Field} id="region" name="region" placeholder="state" />
+                    <Input as={Field} id="region" name="region" placeholder="state" required/>
                   </span>
 
                   <span>
@@ -297,7 +351,7 @@ const Location = () => {
 
               <div className="formGroup storeHours">
                 <h1>store hours</h1>
-                <HoursInput hours={location.hours} />
+                <HoursInput hours={locationTemplate.hours} />
               </div>
 
               <div className="formGroup">
@@ -332,9 +386,7 @@ const Location = () => {
               <Button type="submit">Submit</Button>
             </Form>
           </Formik>
-        ) : (
-          <h1>Loading</h1>
-        )}
+
       </main>
 
       <footer className={styles.footer}></footer>

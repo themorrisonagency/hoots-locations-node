@@ -1,10 +1,32 @@
 import axios from "axios"
 import { Request, Response } from "express"
+import YextErrorDecoder from "../utils/YextErrorDecoder"
 import CreateOrUpdateLocation from "../utils/CreateOrUpdateLocation"
+const YEXT_BASE_URL = "https://api.yext.com/v2/accounts/me/"
 
 module.exports = {
+  create: async (req: Request, res: Response) => {
+    const url = `${YEXT_BASE_URL}entities?entityType=location&api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`
+
+    req.body.address.postalCode = req.body.address.postalCode.toString()
+    const {c_mapTile} = req.body
+    if (c_mapTile == ''){
+      delete req.body.c_mapTile
+    }
+    delete req.body.geocodedCoordinate
+    try {
+      const result = await axios.post(url, req.body)
+
+      const newLocation = await CreateOrUpdateLocation(result.data.response, req.params.id)
+
+      res.json({message: `${req.body.c_locationName} created successfully`, redirect:`/locations/${req.body.meta.id}`})
+    } catch (e) {
+      res.json(e.response.data.meta.errors[0])
+    }
+  },
   update: async (req: Request, res: Response) => {
-    const url = `https://api.yext.com/v2/accounts/me/entities/${req.params.id}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`
+    console.log('update')
+    const url = `${YEXT_BASE_URL}entities/${req.params.id}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`
     try {
       const result = await axios.put(url, req.body)
       await CreateOrUpdateLocation(result.data.response, req.params.id)
@@ -22,7 +44,7 @@ module.exports = {
       entitySearch = `entities/${req.params.id}`
     }
 
-    const { data: yextLocation } = await axios.get(`https://api.yext.com/v2/accounts/me/${entitySearch}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`)
+    const { data: yextLocation } = await axios.get(`${YEXT_BASE_URL}${entitySearch}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`)
 
     const yextResponse = yextLocation.response
 

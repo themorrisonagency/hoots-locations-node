@@ -4,7 +4,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 
 function MyApp({ Component, pageProps }) {
   return (
-    <>
+    <ChakraProvider>
     <link  rel="stylesheet" href="https://hootswings.com/_assets/css/styles.css?v=1638820388" />
       <header className="main-header header--home js-header">
         <div className="main-header__container">
@@ -72,7 +72,7 @@ function MyApp({ Component, pageProps }) {
         </div>
       </header>
       <Component {...pageProps} />
-    </>
+    </ChakraProvider>
   )
 }
 

@@ -10,7 +10,7 @@ export default async function CreateOrUpdateLocation(obj: any, id: string) {
   try {
     if (!exists[0]) {
       obj.yextId = obj.meta.id
-      await getConnection()
+      const result = await getConnection()
         .createQueryBuilder()
         .insert()
         .into(Location)
@@ -18,6 +18,7 @@ export default async function CreateOrUpdateLocation(obj: any, id: string) {
           ...obj,
         })
         .execute()
+        return result.raw[0].id
     } else {
       //   let updateLocation = [...obj]
       const locationRepo = getManager().getRepository(Location)

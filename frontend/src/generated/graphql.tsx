@@ -68,17 +68,33 @@ export type Location = {
 };
 
 export type LocationInput = {
+  address?: InputMaybe<Scalars['String']>;
+  c_cateringURL?: InputMaybe<Scalars['String']>;
+  c_comingSoonText?: InputMaybe<Scalars['String']>;
+  c_locationHighlights?: InputMaybe<Scalars['String']>;
+  c_locationName?: InputMaybe<Scalars['String']>;
+  c_locationShortName?: InputMaybe<Scalars['String']>;
+  c_locationSlug?: InputMaybe<Scalars['String']>;
+  c_mapTile?: InputMaybe<Scalars['String']>;
+  c_mapUrl?: InputMaybe<Scalars['String']>;
+  c_masthead?: InputMaybe<Scalars['String']>;
+  c_oloID?: InputMaybe<Scalars['String']>;
+  c_promoGraphic?: InputMaybe<Scalars['String']>;
+  c_promoUrl?: InputMaybe<Scalars['String']>;
+  c_shortDescription?: InputMaybe<Scalars['String']>;
+  comingSoon?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  geocodedCoordinate?: InputMaybe<Scalars['String']>;
   hours?: InputMaybe<Scalars['String']>;
-};
-
-export type LocationResponse = {
-  __typename?: 'LocationResponse';
-  location?: Maybe<Array<Maybe<Location>>>;
+  mainPhone?: InputMaybe<Scalars['String']>;
+  orderUrl?: InputMaybe<Scalars['String']>;
+  visible?: InputMaybe<Scalars['String']>;
+  yextId?: InputMaybe<Scalars['String']>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addLocation?: Maybe<LocationResponse>;
+  addLocation?: Maybe<Scalars['Boolean']>;
   changePassword?: Maybe<UserResponse>;
   forgotPassword?: Maybe<Scalars['Boolean']>;
   login?: Maybe<UserResponse>;
@@ -177,6 +193,13 @@ export type UsernamePasswordInput = {
 
 export type LocationSnippetFragment = { __typename?: 'Location', c_oloID?: string | null, address?: string | null, description?: string | null, hours?: string | null, name?: string | null, c_cateringURL?: string | null, c_locationHighlights?: string | null, c_locationShortName?: string | null, c_locationSlug?: string | null, c_locationName?: string | null, c_mapTile?: string | null, c_promoGraphic?: string | null, c_masthead?: string | null, c_mapUrl?: string | null, visible?: boolean | null, comingSoon?: boolean | null, c_comingSoonText?: string | null, c_promoUrl?: string | null, c_shortDescription?: string | null, geocodedCoordinate?: string | null, mainPhone?: string | null, orderUrl?: string | null, yextId?: string | null, hoursString?: string | null };
 
+export type AddLocationMutationVariables = Exact<{
+  options: LocationInput;
+}>;
+
+
+export type AddLocationMutation = { __typename?: 'Mutation', addLocation?: boolean | null };
+
 export type UpdateComingSoonMutationVariables = Exact<{
   input: UpdateComingSoonInput;
 }>;
@@ -231,6 +254,15 @@ export const LocationSnippetFragmentDoc = gql`
   hoursString
 }
     `;
+export const AddLocationDocument = gql`
+    mutation AddLocation($options: LocationInput!) {
+  addLocation(options: $options)
+}
+    `;
+
+export function useAddLocationMutation() {
+  return Urql.useMutation<AddLocationMutation, AddLocationMutationVariables>(AddLocationDocument);
+};
 export const UpdateComingSoonDocument = gql`
     mutation updateComingSoon($input: UpdateComingSoonInput!) {
   updateComingSoon(input: $input) {
