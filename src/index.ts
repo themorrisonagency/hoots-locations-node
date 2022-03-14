@@ -75,6 +75,7 @@ const main = async () => {
   // A few routes for pulling from and pushing to yext.
   app.post('/hooks/yext', yext.create)
   app.put('/hooks/yext/:id', yext.update)
+  app.delete('/hooks/yext/:id', yext.delete)
   app.get('/hooks/yext/sync/:id', yext.sync)
 
   

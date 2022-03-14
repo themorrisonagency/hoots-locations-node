@@ -20,25 +20,9 @@ export function timeConversion(s: string) {
   export async function Convert24HourTo12Hour(time: string){
     var date = new Date(`February 04, 2011 ${time}`);
     var options = {
-      hour: 'numeric',
-      minute: 'numeric',
       hour12: true
     };
     var timeString = date.toLocaleTimeString('en-US', options);
     console.log('timestring spli', timeString)
     return timeString
   }
-
-// less lines using array.split/join and modulus (not my solution)
-// function timeConversionSlicker(s) {
-//     let AMPM = s.slice(-2);
-//     let timeArr = s.slice(0, -2).split(":");
-//     if (AMPM === "AM" && timeArr[0] === "12") {
-//         // catching edge-case of 12AM
-//         timeArr[0] = "00";
-//     } else if (AMPM === "PM") {
-//         // everything with PM can just be mod'd and added with 12 - the max will be 23
-//         timeArr[0] = (timeArr[0] % 12) + 12
-//     }  
-//     return timeArr.join(":");
-// }

@@ -53,7 +53,7 @@ export default async function CreateOrUpdateLocation(obj: any, id: string) {
       }
 
       await locationRepo.update({ yextId: id }, obj)
-
+      return await locationRepo.findOne({where: {yextId: id}})
 
     }
   } catch (e) {

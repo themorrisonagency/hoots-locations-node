@@ -1,9 +1,9 @@
-import { Arg, Field, FieldResolver, InputType, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql"
+import { Arg, Field, FieldResolver, InputType, Mutation, Query, Resolver, Root } from "type-graphql"
 import { getConnection } from "typeorm"
 import { Location } from "../entities/Location"
-import {Convert24HourTo12Hour} from '../utils/timeConversion'
 import { LocationInput } from "../utils/LocationInput"
 import ShowOpenHours from "../utils/ShowOpenHours"
+import { Convert24HourTo12Hour } from '../utils/timeConversion'
 
 @InputType()
 class UpdateVisibleInput {
@@ -22,11 +22,7 @@ class UpdateComingSoonInput {
   @Field()
   yextId: string
 }
-@ObjectType()
-class LocationResponse {
-  @Field(() => [Location])
-  location?: Location[]
-}
+
 
 @Resolver(Location)
 export class LocationResolver {
@@ -135,9 +131,7 @@ export class LocationResolver {
         .createQueryBuilder()
         .insert()
         .into(Location)
-        .values({
-          ...options,
-        })
+        .values({...options})
         .returning("*")
         .execute()
       location = result.raw[0]

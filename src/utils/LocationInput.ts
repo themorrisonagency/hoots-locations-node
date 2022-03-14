@@ -30,9 +30,9 @@ export class LocationInput {
     @Field()
     c_mapUrl: string
     @Field()
-    visible: string
+    visible: boolean
     @Field()
-    comingSoon: string
+    comingSoon: boolean
     @Field()
     c_comingSoonText: string
     @Field()

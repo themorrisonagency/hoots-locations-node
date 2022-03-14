@@ -1,7 +1,7 @@
 import axios from "axios"
 import { Request, Response } from "express"
-import YextErrorDecoder from "../utils/YextErrorDecoder"
 import CreateOrUpdateLocation from "../utils/CreateOrUpdateLocation"
+import {Location} from '../entities/Location'
 const YEXT_BASE_URL = "https://api.yext.com/v2/accounts/me/"
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
     try {
       const result = await axios.post(url, req.body)
 
-      const newLocation = await CreateOrUpdateLocation(result.data.response, req.params.id)
+      await CreateOrUpdateLocation(result.data.response, req.params.id)
 
       res.json({message: `${req.body.c_locationName} created successfully`, redirect:`/locations/${req.body.meta.id}`})
     } catch (e) {
@@ -25,14 +25,26 @@ module.exports = {
     }
   },
   update: async (req: Request, res: Response) => {
-    console.log('update')
     const url = `${YEXT_BASE_URL}entities/${req.params.id}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`
     try {
       const result = await axios.put(url, req.body)
       await CreateOrUpdateLocation(result.data.response, req.params.id)
-      res.json({ result })
+      res.json({message: 'Location updated successfully', location: result })
     } catch (e) {
-      res.json(e)
+      res.json(e.response.data.meta.errors[0])
+    }
+  },
+  delete: async (req: Request, res: Response) => {
+    console.log('delete')
+    const url = `${YEXT_BASE_URL}entities/${req.params.id}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`
+    try {
+      const success = await Location.delete({yextId: req.params.id})
+
+      await axios.delete(url)
+      res.json({success})
+    } catch (e) {
+      console.error(e.response)
+      res.json(e.response.data.meta.errors[0])
     }
   },
 

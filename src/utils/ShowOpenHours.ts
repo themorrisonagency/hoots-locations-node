@@ -1,13 +1,7 @@
 import { OpeningHours, WeekDays } from '@phoenix344/opening-hours';
 
-type OpenHoursType = {
-    start: string
-    end: string
-    day: string[]
-}
 
-
-export default async function ShowOpenHours(hours: OpenHoursType, timezone: string): Promise<any> {
+export default async function ShowOpenHours(hours, timezone) {
     
     // let hoursContainer = []
     const oh = new OpeningHours({
@@ -22,32 +16,31 @@ export default async function ShowOpenHours(hours: OpenHoursType, timezone: stri
     });
 
 
-    Object.keys(hours).forEach(day => {
+    Object.keys(hours).forEach((day) => {
+
         if(!hours[day].isClosed){
-            oh.add(WeekDays[capitalize(day)], hours[day].openIntervals[0].start, hours[day].openIntervals[0].end)
+            let weekday: any = WeekDays[capitalize(day)];
+            oh.add(weekday, hours[day].openIntervals[0].start, hours[day].openIntervals[0].end)
 
         }
     })
 
-
-    // let str = ""
-    // (state === 1) ? str = `Open closing at `
     const currentHour = oh.toLocaleJSON().find(day => day.active === true)
-    console.log(oh.toLocaleJSON().find(day => day.active).times)
-    console.log('og', oh.getState())
+
     if (oh.getState() === 1){
-        return `Open - Closing at ${currentHour.times[0].until}`
+        return `Open - Closing at ${currentHour?.times[0].until}`
     } else {
         // Check opening hours in stores time zone vs current time.
-        if(new Date().toLocaleTimeString("en-US", {timeZone: timezone}) > new Date(currentHour.times[0].from).toLocaleTimeString("en-US", {timeZone: timezone})){
+        let fromTime = currentHour?.times[0].from || Date.now()
+        if(new Date().toLocaleTimeString("en-US", {timeZone: timezone}) > new Date(fromTime).toLocaleTimeString("en-US", {timeZone: timezone})){
             return `Closed - Opening tomorrow at ${oh.toLocaleJSON()[1].times[0].from}`
         }
-        return `Closed - Opening at ${currentHour.times[0].from}`
+        return `Closed - Opening at ${currentHour?.times[0].from}`
     }
     return 'Check store page'
 
 }
 
-function capitalize(day) {
+function capitalize(day: any) {
     return day.split('')[0].toUpperCase() + day.split('').slice(1).join('')
 }
