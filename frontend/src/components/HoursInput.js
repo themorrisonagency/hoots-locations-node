@@ -4,7 +4,6 @@ import { Table, Thead, Tr, Th, Td, Tbody, Input } from "@chakra-ui/react"
 
 function HoursInput(obj) {
   const { hours } = obj
-  Object.keys(hours).map(day => console.log('day', day))
 
   return (
     <Table variant="simple">
@@ -27,7 +26,7 @@ function HoursInput(obj) {
               <Input as={Field} id={`${day}Close`} type="text" name={`${day}Close`} />
             </Td>
             <Td>
-              <Field type="checkbox" name="isClosed" checked={!hours[day].openIntervals}/>
+              <Field type="checkbox" name="isClosed"/>
             </Td>
           </Tr>
         ))}

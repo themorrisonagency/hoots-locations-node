@@ -6,32 +6,13 @@ import { useLocationQuery } from "../../src/generated/graphql"
 import { Formik, Field, Form, FormikHelpers } from "formik"
 import { useRouter } from "next/router"
 import { useState } from "react"
-import { ConvertToJson } from "../../src/utils/ConvertToJson"
 import HoursInput from "../../src/components/HoursInput"
-import axios from "axios"
-import { Box, Heading, Flex, Button, FormControl, FormLabel, FormErrorMessage, FormHelperText, Input } from "@chakra-ui/react"
-
-async function timeConversion(s) {
-  const ampm = s.slice(-2).toUpperCase()
-  const hours = Number(s.slice(0, 2))
-  let time = s.slice(0, -2)
-  if (ampm === "AM") {
-    if (hours === 12) {
-      // 12am edge-case
-      return time.replace(s.slice(0, 2), "00").trim()
-    }
-    return time.trim()
-  } else if (ampm === "PM") {
-    if (hours !== 12) {
-      return time.replace(s.slice(0, 2), String(hours + 12)).trim()
-    }
-    return time.trim() // 12pm edge-case
-  }
-  return "Error: AM/PM format is not valid"
-}
+import { Box, Heading, Flex, Button, FormControl, FormLabel, FormErrorMessage, FormHelperText, Input, useToast } from "@chakra-ui/react"
+import UpdateLocation from '../../src/utils/UpdateLocation'
 
 const Location = () => {
   const router = useRouter()
+  const toast = useToast()
   const intId = typeof router.query.id === "string" ? router.query.id : -1
   const [{ data, error, fetching }] = useLocationQuery({
     pause: intId === -1, // If we don't have an id, then stop the query.
@@ -78,91 +59,10 @@ const Location = () => {
       }
     })
     let highlights = []
-    console.log("data", data.location.c_locationHighlights[0])
     setLocation(data.location)
   }
+  
 
-  async function updateLocation(id, location) {
-    const url = `http://localhost:4000/hooks/yext/${id}`
-    let hoursObject = {
-      monday: {
-        openIntervals: [{ start: location.mondayOpen, end: location.mondayClose }],
-      },
-      tuesday: {
-        openIntervals: [{ start: location.tuesdayOpen, end: location.tuesdayClose }],
-      },
-      wednesday: {
-        openIntervals: [{ start: location.wednesdayOpen, end: location.wednesdayClose }],
-      },
-      thursday: {
-        openIntervals: [{ start: location.thursdayOpen, end: location.thursdayClose }],
-      },
-      friday: {
-        openIntervals: [{ start: location.fridayOpen, end: location.fridayClose }],
-      },
-      saturday: {
-        openIntervals: [{ start: location.saturdayOpen, end: location.saturdayClose }],
-      },
-      sunday: {
-        openIntervals: [{ start: location.sundayOpen, end: location.sundayClose }],
-      },
-    }
-    await Object.keys(hoursObject).map(async (day) => {
-      if (hoursObject[day].openIntervals[0].start) {
-        hoursObject[day].openIntervals[0].start = await timeConversion(hoursObject[day].openIntervals[0].start)
-      }
-    })
-    await Object.keys(hoursObject).map(async (day) => {
-      if (hoursObject[day].openIntervals[0].end) {
-        hoursObject[day].openIntervals[0].end = await timeConversion(hoursObject[day].openIntervals[0].end)
-      }
-    })
-
-    let deleteKeys = [
-      "fridayClose",
-      "fridayOpen",
-      "line1",
-      "mondayClose",
-      "mondayOpen",
-      "postalCode",
-      "saturdayClose",
-      "saturdayOpen",
-      "state",
-      "sundayClose",
-      "sundayOpen",
-      "thursdayClose",
-      "thursdayOpen",
-      "tuesdayClose",
-      "tuesdayOpen",
-      "wednesdayClose",
-      "wednesdayOpen",
-      "city",
-      "visible",
-      "comingSoon",
-    ]
-
-    location.orderUrl = {
-      url: location.orderUrl,
-      preferDisplayUrl: false,
-    }
-    let obj = {
-      address: {
-        line1: location.line1,
-        city: location.city,
-        region: location.region,
-        postalCode: location.postalCode,
-      },
-      hours: hoursObject,
-
-      c_oloID: location.c_oloID.toString() || "",
-      ...location,
-    }
-    deleteKeys.forEach((key) => {
-      delete obj[key]
-    })
-    const result = await axios.put(url, obj)
-    router.reload()
-  }
   return (
     <Box bgColor="#fef0e9">
       <Head>
@@ -179,7 +79,7 @@ const Location = () => {
       </Box>
       <main className={styles.main}>
         {!fetching && location ? (
-          <Formik
+          <Formik enableReinitialize={true}
             initialValues={{
               c_locationName,
               c_locationShortName,
@@ -196,12 +96,12 @@ const Location = () => {
               c_locationSlug,
               c_mapTile,
               c_mapUrl,
-              c_oloID: c_oloID.toString(),
+              c_oloID: (c_oloID !=  null) ? c_oloID.toString() : "",
               c_promoUrl,
               c_shortDescription,
               geocodedCoordinate,
               mainPhone,
-              orderUrl: orderUrl.url,
+              orderUrl: (orderUrl) ? orderUrl.url : "",
               visible,
               c_comingSoonText,
               c_locationHighlights,
@@ -221,7 +121,15 @@ const Location = () => {
               sundayClose: hours.sunday.openIntervals ? hours.sunday.openIntervals[0].end : "",
             }}
             onSubmit={async (values) => {
-              await updateLocation(intId, values)
+              const result = await UpdateLocation(intId, values)
+              toast({
+                duration: null,
+                position: 'top-right',
+                title: `${result.data.message || 'Success'}`,
+                status: (result.data.type == 'FATAL_ERROR') ? 'error' : 'success',
+                isClosable: true,
+              })
+              setLocation(result.data.location)
             }}>
             <Form>
               <Box>

@@ -1,4 +1,5 @@
 fragment LocationSnippet on Location {
+    id
     c_oloID
     address
     description

@@ -191,7 +191,7 @@ export type UsernamePasswordInput = {
   username?: InputMaybe<Scalars['String']>;
 };
 
-export type LocationSnippetFragment = { __typename?: 'Location', c_oloID?: string | null, address?: string | null, description?: string | null, hours?: string | null, name?: string | null, c_cateringURL?: string | null, c_locationHighlights?: string | null, c_locationShortName?: string | null, c_locationSlug?: string | null, c_locationName?: string | null, c_mapTile?: string | null, c_promoGraphic?: string | null, c_masthead?: string | null, c_mapUrl?: string | null, visible?: boolean | null, comingSoon?: boolean | null, c_comingSoonText?: string | null, c_promoUrl?: string | null, c_shortDescription?: string | null, geocodedCoordinate?: string | null, mainPhone?: string | null, orderUrl?: string | null, yextId?: string | null, hoursString?: string | null };
+export type LocationSnippetFragment = { __typename?: 'Location', id?: number | null, c_oloID?: string | null, address?: string | null, description?: string | null, hours?: string | null, name?: string | null, c_cateringURL?: string | null, c_locationHighlights?: string | null, c_locationShortName?: string | null, c_locationSlug?: string | null, c_locationName?: string | null, c_mapTile?: string | null, c_promoGraphic?: string | null, c_masthead?: string | null, c_mapUrl?: string | null, visible?: boolean | null, comingSoon?: boolean | null, c_comingSoonText?: string | null, c_promoUrl?: string | null, c_shortDescription?: string | null, geocodedCoordinate?: string | null, mainPhone?: string | null, orderUrl?: string | null, yextId?: string | null, hoursString?: string | null };
 
 export type AddLocationMutationVariables = Exact<{
   options: LocationInput;
@@ -219,15 +219,16 @@ export type LocationQueryVariables = Exact<{
 }>;
 
 
-export type LocationQuery = { __typename?: 'Query', location?: { __typename?: 'Location', c_oloID?: string | null, address?: string | null, description?: string | null, hours?: string | null, name?: string | null, c_cateringURL?: string | null, c_locationHighlights?: string | null, c_locationShortName?: string | null, c_locationSlug?: string | null, c_locationName?: string | null, c_mapTile?: string | null, c_promoGraphic?: string | null, c_masthead?: string | null, c_mapUrl?: string | null, visible?: boolean | null, comingSoon?: boolean | null, c_comingSoonText?: string | null, c_promoUrl?: string | null, c_shortDescription?: string | null, geocodedCoordinate?: string | null, mainPhone?: string | null, orderUrl?: string | null, yextId?: string | null, hoursString?: string | null } | null };
+export type LocationQuery = { __typename?: 'Query', location?: { __typename?: 'Location', id?: number | null, c_oloID?: string | null, address?: string | null, description?: string | null, hours?: string | null, name?: string | null, c_cateringURL?: string | null, c_locationHighlights?: string | null, c_locationShortName?: string | null, c_locationSlug?: string | null, c_locationName?: string | null, c_mapTile?: string | null, c_promoGraphic?: string | null, c_masthead?: string | null, c_mapUrl?: string | null, visible?: boolean | null, comingSoon?: boolean | null, c_comingSoonText?: string | null, c_promoUrl?: string | null, c_shortDescription?: string | null, geocodedCoordinate?: string | null, mainPhone?: string | null, orderUrl?: string | null, yextId?: string | null, hoursString?: string | null } | null };
 
 export type LocationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type LocationsQuery = { __typename?: 'Query', locations?: Array<{ __typename?: 'Location', c_oloID?: string | null, address?: string | null, description?: string | null, hours?: string | null, name?: string | null, c_cateringURL?: string | null, c_locationHighlights?: string | null, c_locationShortName?: string | null, c_locationSlug?: string | null, c_locationName?: string | null, c_mapTile?: string | null, c_promoGraphic?: string | null, c_masthead?: string | null, c_mapUrl?: string | null, visible?: boolean | null, comingSoon?: boolean | null, c_comingSoonText?: string | null, c_promoUrl?: string | null, c_shortDescription?: string | null, geocodedCoordinate?: string | null, mainPhone?: string | null, orderUrl?: string | null, yextId?: string | null, hoursString?: string | null }> | null };
+export type LocationsQuery = { __typename?: 'Query', locations?: Array<{ __typename?: 'Location', id?: number | null, c_oloID?: string | null, address?: string | null, description?: string | null, hours?: string | null, name?: string | null, c_cateringURL?: string | null, c_locationHighlights?: string | null, c_locationShortName?: string | null, c_locationSlug?: string | null, c_locationName?: string | null, c_mapTile?: string | null, c_promoGraphic?: string | null, c_masthead?: string | null, c_mapUrl?: string | null, visible?: boolean | null, comingSoon?: boolean | null, c_comingSoonText?: string | null, c_promoUrl?: string | null, c_shortDescription?: string | null, geocodedCoordinate?: string | null, mainPhone?: string | null, orderUrl?: string | null, yextId?: string | null, hoursString?: string | null }> | null };
 
 export const LocationSnippetFragmentDoc = gql`
     fragment LocationSnippet on Location {
+  id
   c_oloID
   address
   description

@@ -3,7 +3,7 @@ import styles from "../styles/Home.module.css"
 import { createUrqlClient } from "../src/utils/createUrqlClient"
 import { withUrqlClient } from "next-urql"
 import { useLocationsQuery } from "../src/generated/graphql"
-import { StoreHours } from "../src/src/components/StoreHours"
+import { StoreHours } from "../src/components/StoreHours"
 import * as ReactDOM from "react-dom"
 import { Formik, Field, Form, FormikHelpers } from "formik"
 
