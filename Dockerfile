@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:17
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -12,12 +12,12 @@ COPY yarn.lock ./
 RUN yarn
 
 COPY . .
-COPY .env .env
+COPY .env.production .env
 
-RUN node dist/index.js
+RUN yarn build
 
 ENV NODE_ENV production
 
-EXPOSE 8080
+EXPOSE 4000
 CMD [ "node", "dist/index.js" ]
 USER node

@@ -44,7 +44,9 @@ export class LocationResolver {
     let hours = JSON.parse(location.hours)
 
     await Object.keys(hours).map(async (day) => {
-      if (hours[day].openIntervals[0].start) {
+      if (hours[day].isClosed)
+      return hours[day].isClosed
+      if (hours[day].openIntervals) {
         hours[day].openIntervals[0].start = await Convert24HourTo12Hour(hours[day].openIntervals[0].start)
         if (hours[day].openIntervals[0].start.length === 7) {
           hours[day].openIntervals[0].start = '0' + hours[day].openIntervals[0].start
@@ -52,7 +54,7 @@ export class LocationResolver {
       }
     }) 
     await Object.keys(hours).map(async (day) => {
-      if (hours[day].openIntervals[0].end) {
+      if (hours[day].openIntervals) {
 
         hours[day].openIntervals[0].end = await Convert24HourTo12Hour(hours[day].openIntervals[0].end)
         if (hours[day].openIntervals[0].end.length === 7) {
