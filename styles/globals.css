@@ -1,0 +1,95 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    background: #fef0e9;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+input {
+  border: 1px solid gainsboro;
+  padding: 5px;
+  margin-left: 5px;
+  margin: 10px;
+  border-radius: 5px;
+  box-shadow: 1px 1px 1px 1px gainsboro;
+  font-size: 14px;
+}
+h1 {
+  text-align: center;
+}
+label {
+  margin-right: 10px;
+}
+.hoursWrapper, .formGroup {
+  margin: 10px 0;
+}
+.hoursWrapper h3 {
+  margin: 0;
+}
+span input {
+  margin-right: 30px;
+  margin-bottom: 20px;
+  /* display: flex;
+  justify-content:space-between;
+  align-items: center;
+  flex-wrap: wrap; */
+}
+input#line1 {
+  min-width: 40%;
+}
+input#c_shortDescription {
+  min-width: 50%;
+}
+form {
+  max-width: 1100px;
+  background: #fdfdfd;
+  padding: 50px;
+  margin: 0 auto;
+  box-shadow: 2px 2px 2px 1px gainsboro;
+  border-radius: 10px;
+  border: 1px solid gainsboro;
+}
+.storeHours {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+button {
+  padding: 5px;
+}
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 50%;
+  background: white;
+
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+textarea {
+  min-height: 200px;
+  min-width: 400px;
+  padding: 10px;
+  border-color: gainsboro;
+}
