@@ -1,10 +1,7 @@
-import { Cache, cacheExchange, Resolver } from "@urql/exchange-graphcache"
-import { gql } from 'graphql-tag'
+import { cacheExchange, Resolver } from "@urql/exchange-graphcache"
 import Router from "next/router"
 import { dedupExchange, Exchange, fetchExchange, stringifyVariables } from "urql"
 import { pipe, tap } from "wonka"
-import { DeletePostMutationVariables, LoginMutation, LogoutMutation, MeDocument, MeQuery, RegisterMutation, VoteMutationVariables } from "../generated/graphql"
-import betterUpdateQuery from "./betterUpdateQuery"
 import { isServer } from "./isServer"
 
 
@@ -64,21 +61,13 @@ export const errorExchange: Exchange =
     };
   };
 
-function invalidateAllPosts(cache: Cache) {
-  const allFields = cache.inspectFields("Query");// Get all queries in the cache
-  const fieldInfos = allFields.filter((info) => info.fieldName === 'posts');
-  fieldInfos.forEach((fi) => {
-    cache.invalidate('Query', 'posts', fi.arguments)
-  })
-}
+
 export const createUrqlClient = (ssrExchange: any, ctx: any) => {
 
   // Pass logged in users cookie to graphql for ssr requests so we know
   // their status.
   let cookie = ''
-  if(isServer()){
-    cookie = ctx.req.headers.cookie
-  }
+
   return {
   url: "http://localhost:4000/graphql",
   fetchOptions: {
@@ -96,48 +85,7 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
           posts: cursorPagination()
         }
       },
-      updates: {
-        Mutation: {
-          deletePost: (_result, args, cache, info) => {
-            console.log('run me')
-            console.log('args.', args)
-            cache.invalidate({__typename: "Post", id: (args as DeletePostMutationVariables).id})
-          },
-          vote: (_result, args, cache, info) => {
-            const {postId, value} = args as VoteMutationVariables
-            const data = cache.readFragment(
-              gql`
-                fragment _ on Post {
-                  id
-                  points
-                  voteStatus
-                }
-              `,
-              {id: postId} as any
-            );
-            if (data) {
-              if (data.voteStatus === value) {
-                return
-              }
-              const newPoints = (+data.points) + (!data.voteStatus ? 1 : 2) * value
-              cache.writeFragment(
-                gql`
-                fragment _ on Post {
-                  points
-                  voteStatus
-                }
-                `, 
-                {
-                  id: postId, points: newPoints, voteStatus: value
-                }
-              )
-            }
-          },
-          createPost: (_result, args, cache, info) => {// Refetch posts when post is created so that it shows up at top of list.
-            invalidateAllPosts(cache)
-          },
-        },
-      },
+
     }),
     errorExchange,
     ssrExchange,

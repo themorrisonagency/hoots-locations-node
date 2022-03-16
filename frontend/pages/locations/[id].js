@@ -1,14 +1,14 @@
-import Head from "next/head"
-import styles from "../../styles/Home.module.css"
-import { createUrqlClient } from "../../src/utils/createUrqlClient"
+import { Box, Button, Flex, Heading, Input, useToast } from "@chakra-ui/react"
+import { Field, Form, Formik } from "formik"
 import { withUrqlClient } from "next-urql"
-import { useLocationQuery } from "../../src/generated/graphql"
-import { Formik, Field, Form, FormikHelpers } from "formik"
+import Head from "next/head"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import HoursInput from "../../src/components/HoursInput"
-import { Box, Heading, Flex, Button, FormControl, FormLabel, FormErrorMessage, FormHelperText, Input, useToast } from "@chakra-ui/react"
+import { useLocationQuery } from "../../src/generated/graphql"
+import { createUrqlClient } from "../../src/utils/createUrqlClient"
 import UpdateLocation from '../../src/utils/UpdateLocation'
+import styles from "../../styles/Home.module.css"
 
 const Location = () => {
   const router = useRouter()
@@ -22,7 +22,6 @@ const Location = () => {
   })
   const [location, setLocation] = useState("")
 
-  const [openHours, setOpeningHours] = useState([])
   const {
     address,
     description,
@@ -58,7 +57,6 @@ const Location = () => {
         data.location[key] = data.location[key]
       }
     })
-    let highlights = []
     setLocation(data.location)
   }
   

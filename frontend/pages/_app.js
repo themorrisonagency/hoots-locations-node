@@ -1,7 +1,7 @@
 import "../styles/globals.css"
 import Image from "next/image"
 import { ChakraProvider } from '@chakra-ui/react'
-
+import Link from 'next/link'
 function MyApp({ Component, pageProps }) {
   return (
     <ChakraProvider>
@@ -19,51 +19,51 @@ function MyApp({ Component, pageProps }) {
             </button>
           </span>
 
-          <a href="/" className="main-header__logo">
+          <Link href="/" className="main-header__logo">
             <Image src="https://hootswings.com/perch/resources/logos/hoots-wings-logo.png" alt="Hoots Wings" height="100px" width="100px" />
-          </a>
+          </Link>
           <div className="main-header__navigation">
             <nav className="main-nav js-main-nav">
               <ul className="main-nav__list">
                 <li className="main-nav__list-item">
-                  <a className="main-nav__list-link " href="https://hootswings.com/locations">
+                  <Link className="main-nav__list-link " href="https://hootswings.com/locations">
                     Order
-                  </a>
+                  </Link>
                 </li>
 
                 <li className="main-nav__list-item">
-                  <a className="main-nav__list-link " href="/locations">
+                  <Link className="main-nav__list-link " href="/locations">
                     Locations
-                  </a>
+                  </Link>
                 </li>
 
                 <li className="main-nav__list-item">
-                  <a className="main-nav__list-link " href="/food">
+                  <Link className="main-nav__list-link " href="/food">
                     Menu
-                  </a>
+                  </Link>
                 </li>
               </ul>
               <ul className="main-nav__list">
                 <li className="main-nav__list-item">
-                  <a className="main-nav__list-link hootscoop" href="/hoot-scoop">
+                  <Link className="main-nav__list-link hootscoop" href="/hoot-scoop">
                     Hootscoop
-                  </a>
+                  </Link>
                 </li>
 
                 <li className="main-nav__list-item">
-                  <a className="main-nav__list-link " href="/about">
+                  <Link className="main-nav__list-link " href="/about">
                     About
-                  </a>
+                  </Link>
                 </li>
 
                 <li className="main-nav__list-item">
-                  <a className="main-nav__list-link " href="https://hootsfranchise.com/">
+                  <Link className="main-nav__list-link " href="https://hootsfranchise.com/">
                     franchise
-                  </a>
+                  </Link>
                 </li>
 
                 <li className="main-nav__list-item">
-                  <a className="main-nav__list-link " href="https:/careers-hootswings-hoots.icims.com/"></a>
+                  <Link className="main-nav__list-link" href="https:/careers-hootswings-hoots.icims.com/">careers</Link>
                 </li>
               </ul>
             </nav>
