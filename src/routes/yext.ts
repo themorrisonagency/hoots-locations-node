@@ -2,11 +2,13 @@ import axios from "axios"
 import { Request, Response } from "express"
 import CreateOrUpdateLocation from "../utils/CreateOrUpdateLocation"
 import {Location} from '../entities/Location'
+// const YEXT_API_KEY = 'bc275d4d9487c19916b70ef74134cf5d'// prod
+const YEXT_API_KEY = '061b421ca1852bddfcf96e4138f49da4'// staging
 const YEXT_BASE_URL = "https://api.yext.com/v2/accounts/me/"
 
 module.exports = {
   create: async (req: Request, res: Response) => {
-    const url = `${YEXT_BASE_URL}entities?entityType=location&api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`
+    const url = `${YEXT_BASE_URL}entities?entityType=location&api_key=${YEXT_API_KEY}&v=20220202`
 
     req.body.address.postalCode = req.body.address.postalCode.toString()
     const {c_mapTile} = req.body
@@ -27,10 +29,14 @@ module.exports = {
   update: async (req: Request, res: Response) => {
     const url = `${YEXT_BASE_URL}entities/${req.params.id}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`
     try {
+      delete req.body.isClosed
+      console.log('req body', req.body)
       const result = await axios.put(url, req.body)
+      console.log('body', result)
       await CreateOrUpdateLocation(result.data.response, req.params.id)
-      res.json({message: 'Location updated successfully', location: result })
+      res.json({message: 'Location updated successfully', location: result.data.response })
     } catch (e) {
+      console.error('error', e)
       res.json(e.response.data.meta.errors[0])
     }
   },

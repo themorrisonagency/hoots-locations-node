@@ -69,7 +69,7 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
   let cookie = ''
 
   return {
-  url: "https://locations.hootswings.com/api/graphql",
+  url: process.env.BACKEND_API,
   fetchOptions: {
     credentials: "include" as const,
     headers: cookie ? {cookie} : undefined

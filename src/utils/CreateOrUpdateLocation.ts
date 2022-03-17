@@ -20,7 +20,6 @@ export default async function CreateOrUpdateLocation(obj: any, id: string) {
         .execute()
         return result.raw[0].id
     } else {
-      //   let updateLocation = [...obj]
       const locationRepo = getManager().getRepository(Location)
       obj.yextId = obj.meta.id
 

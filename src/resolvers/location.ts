@@ -42,24 +42,32 @@ export class LocationResolver {
   @FieldResolver(() => String)
   async hours(@Root() location: Location) {
     let hours = JSON.parse(location.hours)
-
+    if (hours == null){
+      const template = {
+        monday: {isClosed: true},
+        tuesday: {isClosed: true},
+        wednesday: {isClosed: true},
+        thursday: {isClosed: true},
+        friday: {isClosed: true},
+        saturday: {isClosed: true},
+        sunday: {isClosed: true}
+      }
+      return JSON.stringify(template)
+    }
     await Object.keys(hours).map(async (day) => {
+
       if (hours[day].isClosed)
       return hours[day].isClosed
+      console.log('start/end', hours[day].openIntervals[0].start.length, hours[day].openIntervals[0].end.length)
       if (hours[day].openIntervals) {
         hours[day].openIntervals[0].start = await Convert24HourTo12Hour(hours[day].openIntervals[0].start)
-        if (hours[day].openIntervals[0].start.length === 7) {
-          hours[day].openIntervals[0].start = '0' + hours[day].openIntervals[0].start
-        }
       }
     }) 
     await Object.keys(hours).map(async (day) => {
       if (hours[day].openIntervals) {
 
         hours[day].openIntervals[0].end = await Convert24HourTo12Hour(hours[day].openIntervals[0].end)
-        if (hours[day].openIntervals[0].end.length === 7) {
-          hours[day].openIntervals[0].end = '0' + hours[day].openIntervals[0].end
-        }
+
       }
     }) 
 

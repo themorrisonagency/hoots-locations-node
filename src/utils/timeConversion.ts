@@ -23,6 +23,8 @@ export function timeConversion(s: string) {
       hour12: true
     };
     var timeString = date.toLocaleTimeString('en-US', options);
-    console.log('timestring spli', timeString)
+    if (timeString.length == 10){
+      timeString = "0" + timeString
+    }
     return timeString
   }

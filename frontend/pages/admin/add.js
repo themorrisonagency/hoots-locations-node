@@ -9,6 +9,9 @@ import { useAddLocationMutation } from "../../src/generated/graphql"
 import { createUrqlClient } from "../../src/utils/createUrqlClient"
 import styles from "../../styles/Home.module.css"
 import {EmptyLocationObject} from '../../src/utils/EmptyLocationObject'
+import {ArrowBackIcon} from '@chakra-ui/icons'
+import Link from 'next/link'
+
 async function timeConversion(s) {
   const ampm = s.slice(-2).toUpperCase()
   const hours = Number(s.slice(0, 2))
@@ -34,7 +37,6 @@ const Location = () => {
   const toast = useToast()
   const [newLocation, setNewLocation] = useAddLocationMutation()
 
-console.log('empty', EmptyLocationObject)
 
   const {
     address,
@@ -175,8 +177,9 @@ console.log('empty', EmptyLocationObject)
 
       <Box bgColor={"white"} p={5}>
         <Flex justifyContent={"space-between"}>
-          <Heading>Add new location</Heading>
-          <Heading>Hoots Wings</Heading>
+        <Button leftIcon={<ArrowBackIcon />} colorScheme='teal' variant='outline'>
+    <Link href="/admin">All Locations</Link></Button>
+              <Heading>Hoots Wings</Heading>
         </Flex>
       </Box>
       <main className={styles.main}>
