@@ -21,7 +21,7 @@ module.exports = {
 
       await CreateOrUpdateLocation(result.data.response, req.params.id)
 
-      res.json({message: `${req.body.c_locationName} created successfully`, redirect:`/locations/${req.body.meta.id}`})
+      res.json({message: `${req.body.c_locationName} created successfully`, redirect:`/admin/${req.body.meta.id}`})
     } catch (e) {
       res.json(e.response.data.meta.errors[0])
     }
@@ -32,7 +32,6 @@ module.exports = {
       delete req.body.isClosed
       console.log('req body', req.body)
       const result = await axios.put(url, req.body)
-      console.log('body', result)
       await CreateOrUpdateLocation(result.data.response, req.params.id)
       res.json({message: 'Location updated successfully', location: result.data.response })
     } catch (e) {
@@ -62,7 +61,7 @@ module.exports = {
       entitySearch = `entities/${req.params.id}`
     }
 
-    const { data: yextLocation } = await axios.get(`${YEXT_BASE_URL}${entitySearch}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`)
+    const { data: yextLocation } = await axios.get(`${YEXT_BASE_URL}${entitySearch}?api_key=${YEXT_API_KEY}&v=20220202&limit=50`)
 
     const yextResponse = yextLocation.response
 

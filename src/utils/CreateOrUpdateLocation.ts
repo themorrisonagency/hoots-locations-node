@@ -10,6 +10,9 @@ export default async function CreateOrUpdateLocation(obj: any, id: string) {
   try {
     if (!exists[0]) {
       obj.yextId = obj.meta.id
+      if (obj.c_locationSlug == "" || obj.c_locationSlug == null){
+        obj.c_locationSlug = id
+      }
       const result = await getConnection()
         .createQueryBuilder()
         .insert()
@@ -48,7 +51,6 @@ export default async function CreateOrUpdateLocation(obj: any, id: string) {
       for (var i = 0; i < fields.length; i++) {
         let key = fields[i]
         obj[key] = obj[key] || ""
-        console.log("obj", obj[key])
       }
 
       await locationRepo.update({ yextId: id }, obj)

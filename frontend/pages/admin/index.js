@@ -20,7 +20,11 @@ import { Button, useToast,
     Thead,
     Tr,
     Td,
-    Tbody} from "@chakra-ui/react"
+    Tbody,
+    Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator} from "@chakra-ui/react"
     import {ArrowBackIcon, AddIcon, EditIcon} from '@chakra-ui/icons'
 import axios from "axios"
 
@@ -85,11 +89,15 @@ const Locations = () => {
     <div className={styles.container}>
       <Box bgColor={"white"} p={5}>
         <Flex justifyContent={"space-between"}>
-        <Button leftIcon={<ArrowBackIcon />} colorScheme='teal' variant='outline'>
-          <Link href="/admin">All Locations</Link>
-        </Button>
-        <Button leftIcon={<AddIcon />} href="/admin/add" colorScheme='green'>
-         Add Location
+        <Breadcrumb>
+  <BreadcrumbItem isCurrentPage>
+    <BreadcrumbLink href='/admin'>All Locations</BreadcrumbLink>
+  </BreadcrumbItem>
+
+
+</Breadcrumb>
+        <Button leftIcon={<AddIcon />} colorScheme='green'>
+         <Link href="/admin/add">Add Location</Link>
         </Button>
         </Flex>
       </Box>
