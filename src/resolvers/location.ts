@@ -41,8 +41,8 @@ export class LocationResolver {
 
   @FieldResolver(() => String)
   async hours(@Root() location: Location) {
-    let hours = JSON.parse(location.hours)
-    if (hours == null){
+    if (location.hours === ""){
+      console.log('template')
       const template = {
         monday: {isClosed: true},
         tuesday: {isClosed: true},
@@ -52,8 +52,11 @@ export class LocationResolver {
         saturday: {isClosed: true},
         sunday: {isClosed: true}
       }
+      console.log(JSON.stringify(template))
       return JSON.stringify(template)
     }
+    let hours = JSON.parse(location.hours)
+
     await Object.keys(hours).map(async (day) => {
 
       if (hours[day].isClosed)
