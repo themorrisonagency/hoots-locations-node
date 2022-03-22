@@ -11,10 +11,10 @@ module.exports = {
     const url = `${YEXT_BASE_URL}entities?entityType=location&api_key=${YEXT_API_KEY}&v=20220202`
 
     req.body.address.postalCode = req.body.address.postalCode.toString()
-    const {c_mapTile} = req.body
-    if (c_mapTile == ''){
-      delete req.body.c_mapTile
-    }
+    // const {c_mapTile} = req.body
+    // if (c_mapTile == ''){
+    //   delete req.body.c_mapTile
+    // }
     delete req.body.geocodedCoordinate
     try {
       const result = await axios.post(url, req.body)

@@ -6,7 +6,6 @@ export default async function CreateOrUpdateLocation(obj: any, id: string) {
     where: { yextId: id },
     select: ["id"],
   })
-
   try {
     if (!exists[0]) {
       obj.yextId = obj.meta.id

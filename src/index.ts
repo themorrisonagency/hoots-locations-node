@@ -5,7 +5,7 @@ import bodyParser from 'body-parser'
 import { ApolloServer } from "apollo-server-express";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import { buildSchema } from "type-graphql";
-
+import fs from 'fs'
 import 'dotenv-safe/config'
 import cors from "cors";
 
@@ -15,6 +15,8 @@ import path from "path";
 import {Location} from "./entities/Location"
 import { LocationResolver } from "./resolvers/location";
 const yext = require('./routes/yext')
+const images = require('./routes/images')
+const formidable = require('formidable');
 
 const main = async () => {
   // Explicit config using .env file
@@ -49,11 +51,24 @@ const main = async () => {
 
 
   // A few routes for pulling from and pushing to yext.
+  app.post('/images', (req, res) => {
+    const form = new formidable.IncomingForm({keepExtensions:true});
+    form.parse(req, async function (err, fields, files) {
+
+      const filePath = await saveFile(files.file);
+      return res.status(200).json({url: filePath});
+    });
+  });
   app.post('/hooks/yext', yext.create)
   app.put('/hooks/yext/:id', yext.update)
   app.delete('/hooks/yext/:id', yext.delete)
   app.get('/hooks/yext/sync/:id', yext.sync)
-
+  const saveFile = async (file) => {
+    const data = fs.readFileSync(file.filepath);
+    fs.writeFileSync(`${process.env.PERCH_UPLOAD_PATH}/${file.newFilename}`, data);
+    await fs.unlinkSync(file.filepath);
+    return `${process.env.PERCH_UPLOAD_PATH_PUBLIC}/${file.newFilename}`
+  };
   
   /**
    * 

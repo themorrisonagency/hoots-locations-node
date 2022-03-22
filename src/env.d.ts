@@ -6,5 +6,7 @@ declare namespace NodeJS {
     SESSION_SECRET: string;
     CORS_ORIGIN: string;
     RUN_MIGRATIONS: string;
+    PERCH_UPLOAD_PATH: string;
+    PERCH_UPLOAD_PATH_PUBLIC: string;
   }
 }
