@@ -15,7 +15,6 @@ import path from "path";
 import {Location} from "./entities/Location"
 import { LocationResolver } from "./resolvers/location";
 const yext = require('./routes/yext')
-const images = require('./routes/images')
 const formidable = require('formidable');
 
 const main = async () => {
@@ -53,8 +52,12 @@ const main = async () => {
   // A few routes for pulling from and pushing to yext.
   app.post('/images', (req, res) => {
     const form = new formidable.IncomingForm({keepExtensions:true});
-    form.parse(req, async function (err, fields, files) {
+    form.parse(req, async function (err, _, files) {
 
+      if (err){
+        console.error(err)
+        return
+      }
       const filePath = await saveFile(files.file);
       return res.status(200).json({url: filePath});
     });
