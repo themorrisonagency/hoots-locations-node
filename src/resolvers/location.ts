@@ -41,7 +41,7 @@ export class LocationResolver {
 
   @FieldResolver(() => String)
   async hours(@Root() location: Location) {
-    if (location.hours === ""){
+    if (location.hours === "" || location.hours === null){
       console.log('template')
       const template = {
         monday: {isClosed: true},
