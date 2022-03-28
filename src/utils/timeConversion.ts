@@ -26,5 +26,10 @@ export function timeConversion(s: string) {
     if (timeString.length == 10){
       timeString = "0" + timeString
     }
-    return timeString
+    let timeArray = timeString.split(' ')
+    let hms: any = timeArray[0].split(':')
+    if (hms.length === 3){
+      hms = hms.slice(0,2).join(':')
+    }
+    return `${hms}${timeArray[1]}`
   }

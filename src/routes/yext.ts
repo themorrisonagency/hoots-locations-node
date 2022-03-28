@@ -30,7 +30,6 @@ module.exports = {
     const url = `${YEXT_BASE_URL}entities/${req.params.id}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`
     try {
       delete req.body.isClosed
-      console.log(typeof req.body.geocodedCoordinate.latitude)
       if (req.body.geocodedCoordinate.latitude && typeof req.body.geocodedCoordinate.latitude == "string"){
         let geo = {
           latitude: parseFloat(req.body.geocodedCoordinate.latitude),

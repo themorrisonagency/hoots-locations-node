@@ -29,7 +29,6 @@ export default async function CreateOrUpdateLocation(obj: any, id: string) {
       let fields = [
         "address",
         "description",
-        "hours",
         "name",
         "c_cateringURL",
         "c_infoBanner",
