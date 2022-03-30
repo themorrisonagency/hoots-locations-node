@@ -30,7 +30,7 @@ module.exports = {
     const url = `${YEXT_BASE_URL}entities/${req.params.id}?api_key=061b421ca1852bddfcf96e4138f49da4&v=20220202`
     try {
       delete req.body.isClosed
-      if (req.body.geocodedCoordinate.latitude && typeof req.body.geocodedCoordinate.latitude == "string"){
+      if (req.body.geocodedCoordinate && req.body.geocodedCoordinate.latitude && typeof req.body.geocodedCoordinate.latitude == "string"){
         let geo = {
           latitude: parseFloat(req.body.geocodedCoordinate.latitude),
           longitude: parseFloat(req.body.geocodedCoordinate.longitude)
@@ -39,6 +39,10 @@ module.exports = {
         req.body.geocodedCoordinate = geo
 
       }
+
+      // When we add a location, we start with an hours object that has isClosed set to true for all days.
+      // If hours are added, we needed to remove the isClosed flag.
+
       const result = await axios.put(url, req.body)
       await CreateOrUpdateLocation(result.data.response, req.params.id)
       res.json({message: 'Location updated successfully', location: result.data.response })
