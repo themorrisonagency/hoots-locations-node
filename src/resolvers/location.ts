@@ -41,23 +41,36 @@ export class LocationResolver {
 
   @FieldResolver(() => String)
   async hours(@Root() location: Location) {
+    if (location.hours === "" || location.hours === null){
+      console.log('template')
+      const template = {
+        monday: {isClosed: true},
+        tuesday: {isClosed: true},
+        wednesday: {isClosed: true},
+        thursday: {isClosed: true},
+        friday: {isClosed: true},
+        saturday: {isClosed: true},
+        sunday: {isClosed: true}
+      }
+      console.log(JSON.stringify(template))
+      return JSON.stringify(template)
+    }
     let hours = JSON.parse(location.hours)
 
     await Object.keys(hours).map(async (day) => {
-      if (hours[day].openIntervals[0].start) {
+
+      if (hours[day].isClosed)
+      return hours[day].isClosed
+      console.log('start/end', hours[day].openIntervals[0].start.length, hours[day].openIntervals[0].end.length)
+      if (hours[day].openIntervals) {
         hours[day].openIntervals[0].start = await Convert24HourTo12Hour(hours[day].openIntervals[0].start)
-        if (hours[day].openIntervals[0].start.length === 7) {
-          hours[day].openIntervals[0].start = '0' + hours[day].openIntervals[0].start
-        }
       }
     }) 
     await Object.keys(hours).map(async (day) => {
-      if (hours[day].openIntervals[0].end) {
+      if (hours[day].openIntervals) {
 
         hours[day].openIntervals[0].end = await Convert24HourTo12Hour(hours[day].openIntervals[0].end)
-        if (hours[day].openIntervals[0].end.length === 7) {
-          hours[day].openIntervals[0].end = '0' + hours[day].openIntervals[0].end
-        }
+
       }
     }) 
 
@@ -72,7 +85,8 @@ export class LocationResolver {
     .query(`
     SELECT p.*
     FROM location p
-    WHERE name = 'Hoots Wings'`)
+    WHERE name = 'Hoots Wings'
+    ORDER BY "c_locationName"`)// Typeorm requires camelCase variables to be wrapped in double qoutes.
 
     for (const location of locations) {
       Object.keys(location).forEach(key => {

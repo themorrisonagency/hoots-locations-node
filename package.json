@@ -11,7 +11,9 @@
     "backend": "concurrently \"yarn dev\" \"yarn watch\"",
     "create:migration": "mikro-orm migration:create",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "production": "node dist/index.js"
+    "production": "node dist/index.js",
+    "docker:run": "docker run -d --name hoots-backend -e TZ=UTC -p 4000:4000 enxo/hoots-locations-demo",
+    "docker:build": "docker build . -t enxo/hoots-locations-demo"
   },
   "keywords": [],
   "author": "",
@@ -37,7 +39,6 @@
     "@phoenix344/opening-hours": "^2.0.0",
     "@types/graphql-type-json": "^0.3.2",
     "apollo-server-express": "^3.3.0",
-    "argon2": "^0.28.2",
     "axios": "^0.26.0",
     "body-parser": "^1.19.2",
     "class-validator": "^0.13.1",
@@ -48,6 +49,7 @@
     "dotenv-safe": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
+    "formidable": "^2.0.1",
     "graphql": "^15.5.3",
     "graphql-type-json": "^0.3.2",
     "ioredis": "^4.27.9",

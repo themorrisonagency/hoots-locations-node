@@ -1,33 +1,30 @@
 import "reflect-metadata";
-import { COOKIE_NAME, __prod__ } from "./constants";
+import { __prod__ } from "./constants";
 import express from "express";
 import bodyParser from 'body-parser'
 import { ApolloServer } from "apollo-server-express";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import { buildSchema } from "type-graphql";
-
+import fs from 'fs'
 import 'dotenv-safe/config'
 import cors from "cors";
-import Redis from "ioredis";
-import connectRedis from "connect-redis";
+
 import { createConnection } from "typeorm";
 
 import path from "path";
 import {Location} from "./entities/Location"
-import { User } from "./entities/User";
-import { UserResolver } from "./resolvers/user";
 import { LocationResolver } from "./resolvers/location";
 const yext = require('./routes/yext')
-const session = require("express-session")
+const formidable = require('formidable');
 
 const main = async () => {
   // Explicit config using .env file
   const conn = await createConnection({
     type: "postgres",
     url: process.env.DATABASE_URL,
-    logging: true,
+    logging: false,
     synchronize: true,
-    entities: [User, Location],
+    entities: [Location],
     migrations: [path.join(__dirname, "./migrations/*")]
   });
 
@@ -42,8 +39,6 @@ const main = async () => {
   //   await orm.em.persistAndFlush(post);
   const app = express();
 
-  const RedisStore = connectRedis(session);
-  const redis = new Redis(process.env.REDIS_URL);
 
   app.use(
     cors({
@@ -51,33 +46,32 @@ const main = async () => {
       credentials: true,
     })
   );
-  app.use(
-    session({
-      name: COOKIE_NAME,
-      store: new RedisStore({
-        client: redis,
-        disableTouch: true,
-      }),
-      cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
-        httpOnly: true,
-        sameSite: "lax", // csrf
-        secure: __prod__, // cookie only works in https
-      },
-      saveUninitialized: false,
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-    })
-  );
   app.use(bodyParser.json())
 
 
   // A few routes for pulling from and pushing to yext.
+  app.post('/images', (req, res) => {
+    const form = new formidable.IncomingForm({keepExtensions:true});
+    form.parse(req, async function (err, _, files) {
+
+      if (err){
+        console.error(err)
+        return
+      }
+      const filePath = await saveFile(files.file);
+      return res.status(200).json({url: filePath});
+    });
+  });
   app.post('/hooks/yext', yext.create)
   app.put('/hooks/yext/:id', yext.update)
   app.delete('/hooks/yext/:id', yext.delete)
   app.get('/hooks/yext/sync/:id', yext.sync)
-
+  const saveFile = async (file) => {
+    const data = fs.readFileSync(file.filepath);
+    fs.writeFileSync(`${process.env.PERCH_UPLOAD_PATH}/${file.newFilename}`, data);
+    await fs.unlinkSync(file.filepath);
+    return `${process.env.PERCH_UPLOAD_PATH_PUBLIC}/${file.newFilename}`
+  };
   
   /**
    * 
@@ -86,13 +80,12 @@ const main = async () => {
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       nullableByDefault: true,//So we can return null fields cause not every field will have a value.
-      resolvers: [UserResolver, LocationResolver],
+      resolvers: [LocationResolver],
       validate: false,
     }),
     context: ({ req, res }) => ({
       req,
       res,
-      redis,
     }),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],// Use the old school apollo graphql playground
   });

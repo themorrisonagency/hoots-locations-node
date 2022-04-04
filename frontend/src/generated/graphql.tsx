@@ -17,12 +17,6 @@ export type Scalars = {
   DateTime: any;
 };
 
-export type FieldError = {
-  __typename?: 'FieldError';
-  field?: Maybe<Scalars['String']>;
-  message?: Maybe<Scalars['String']>;
-};
-
 export type Location = {
   __typename?: 'Location';
   address?: Maybe<Scalars['String']>;
@@ -82,24 +76,19 @@ export type LocationInput = {
   c_promoGraphic?: InputMaybe<Scalars['String']>;
   c_promoUrl?: InputMaybe<Scalars['String']>;
   c_shortDescription?: InputMaybe<Scalars['String']>;
-  comingSoon?: InputMaybe<Scalars['String']>;
+  comingSoon?: InputMaybe<Scalars['Boolean']>;
   description?: InputMaybe<Scalars['String']>;
   geocodedCoordinate?: InputMaybe<Scalars['String']>;
   hours?: InputMaybe<Scalars['String']>;
   mainPhone?: InputMaybe<Scalars['String']>;
   orderUrl?: InputMaybe<Scalars['String']>;
-  visible?: InputMaybe<Scalars['String']>;
+  visible?: InputMaybe<Scalars['Boolean']>;
   yextId?: InputMaybe<Scalars['String']>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
   addLocation?: Maybe<Scalars['Boolean']>;
-  changePassword?: Maybe<UserResponse>;
-  forgotPassword?: Maybe<Scalars['Boolean']>;
-  login?: Maybe<UserResponse>;
-  logout?: Maybe<Scalars['Boolean']>;
-  register?: Maybe<UserResponse>;
   updateComingSoon?: Maybe<Location>;
   updateVisibility?: Maybe<Location>;
 };
@@ -107,28 +96,6 @@ export type Mutation = {
 
 export type MutationAddLocationArgs = {
   options?: InputMaybe<LocationInput>;
-};
-
-
-export type MutationChangePasswordArgs = {
-  newPassword?: InputMaybe<Scalars['String']>;
-  token?: InputMaybe<Scalars['String']>;
-};
-
-
-export type MutationForgotPasswordArgs = {
-  email?: InputMaybe<Scalars['String']>;
-};
-
-
-export type MutationLoginArgs = {
-  password?: InputMaybe<Scalars['String']>;
-  usernameOrEmail?: InputMaybe<Scalars['String']>;
-};
-
-
-export type MutationRegisterArgs = {
-  options?: InputMaybe<UsernamePasswordInput>;
 };
 
 
@@ -145,8 +112,6 @@ export type Query = {
   __typename?: 'Query';
   location?: Maybe<Location>;
   locations?: Maybe<Array<Location>>;
-  me?: Maybe<User>;
-  teachers?: Maybe<Array<User>>;
 };
 
 
@@ -162,33 +127,6 @@ export type UpdateComingSoonInput = {
 export type UpdateVisibleInput = {
   visible?: InputMaybe<Scalars['Boolean']>;
   yextId?: InputMaybe<Scalars['String']>;
-};
-
-export type User = {
-  __typename?: 'User';
-  createdAt?: Maybe<Scalars['DateTime']>;
-  email?: Maybe<Scalars['String']>;
-  firstName?: Maybe<Scalars['String']>;
-  fullName?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['Int']>;
-  isAdmin?: Maybe<Scalars['Boolean']>;
-  lastName?: Maybe<Scalars['String']>;
-  updatedAt?: Maybe<Scalars['DateTime']>;
-  username?: Maybe<Scalars['String']>;
-};
-
-export type UserResponse = {
-  __typename?: 'UserResponse';
-  errors?: Maybe<Array<FieldError>>;
-  user?: Maybe<User>;
-};
-
-export type UsernamePasswordInput = {
-  email?: InputMaybe<Scalars['String']>;
-  firstName?: InputMaybe<Scalars['String']>;
-  lastName?: InputMaybe<Scalars['String']>;
-  password?: InputMaybe<Scalars['String']>;
-  username?: InputMaybe<Scalars['String']>;
 };
 
 export type LocationSnippetFragment = { __typename?: 'Location', id?: number | null, c_oloID?: string | null, address?: string | null, description?: string | null, hours?: string | null, name?: string | null, c_cateringURL?: string | null, c_locationHighlights?: string | null, c_locationShortName?: string | null, c_locationSlug?: string | null, c_locationName?: string | null, c_mapTile?: string | null, c_promoGraphic?: string | null, c_masthead?: string | null, c_mapUrl?: string | null, visible?: boolean | null, comingSoon?: boolean | null, c_comingSoonText?: string | null, c_promoUrl?: string | null, c_shortDescription?: string | null, geocodedCoordinate?: string | null, mainPhone?: string | null, orderUrl?: string | null, yextId?: string | null, hoursString?: string | null };

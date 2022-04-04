@@ -23,6 +23,13 @@ export function timeConversion(s: string) {
       hour12: true
     };
     var timeString = date.toLocaleTimeString('en-US', options);
-    console.log('timestring spli', timeString)
-    return timeString
+    if (timeString.length == 10){
+      timeString = "0" + timeString
+    }
+    let timeArray = timeString.split(' ')
+    let hms: any = timeArray[0].split(':')
+    if (hms.length === 3){
+      hms = hms.slice(0,2).join(':')
+    }
+    return `${hms}${timeArray[1]}`
   }

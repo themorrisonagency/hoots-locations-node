@@ -159,7 +159,6 @@ export class Location extends BaseEntity {
   @Field()
   @Column({nullable: true})
 
-
   @Field()
   @CreateDateColumn()
   createdAd: Date;
