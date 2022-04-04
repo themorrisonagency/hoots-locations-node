@@ -40,6 +40,10 @@ export class LocationResolver {
   }
 
   @FieldResolver(() => String)
+
+  async listingOrder(@Root() location: Location) {
+
+  }
   async hours(@Root() location: Location) {
     if (location.hours === "" || location.hours === null){
       console.log('template')
@@ -85,7 +89,8 @@ export class LocationResolver {
     .query(`
     SELECT p.*
     FROM location p
-    WHERE name = 'Hoots Wings'`)
+    WHERE name = 'Hoots Wings'
+    ORDER BY "c_locationName"`)// Typeorm requires camelCase variables to be wrapped in double qoutes.
 
     for (const location of locations) {
       Object.keys(location).forEach(key => {
