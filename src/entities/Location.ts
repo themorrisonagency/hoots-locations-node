@@ -160,11 +160,6 @@ export class Location extends BaseEntity {
   @Column({nullable: true})
 
   @Field()
-  @Column({nullable: true})
-  c_displayOrder: string
-
-
-  @Field()
   @CreateDateColumn()
   createdAd: Date;
 

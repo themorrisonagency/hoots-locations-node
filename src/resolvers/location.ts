@@ -40,10 +40,6 @@ export class LocationResolver {
   }
 
   @FieldResolver(() => String)
-
-  async listingOrder(@Root() location: Location) {
-
-  }
   async hours(@Root() location: Location) {
     if (location.hours === "" || location.hours === null){
       console.log('template')

@@ -2,8 +2,9 @@ import axios from "axios"
 import { Request, Response } from "express"
 import CreateOrUpdateLocation from "../utils/CreateOrUpdateLocation"
 import {Location} from '../entities/Location'
-const YEXT_API_KEY = 'bc275d4d9487c19916b70ef74134cf5d'// prod
-// const YEXT_API_KEY = '061b421ca1852bddfcf96e4138f49da4'// staging
+import 'dotenv-safe/config'
+const YEXT_API_KEY = process.env.YEXT_API_KEY
+
 const YEXT_BASE_URL = "https://api.yext.com/v2/accounts/me/"
 
 module.exports = {
@@ -11,10 +12,7 @@ module.exports = {
     const url = `${YEXT_BASE_URL}entities?entityType=location&api_key=${YEXT_API_KEY}&v=20220202`
 
     req.body.address.postalCode = req.body.address.postalCode.toString()
-    // const {c_mapTile} = req.body
-    // if (c_mapTile == ''){
-    //   delete req.body.c_mapTile
-    // }
+
     delete req.body.geocodedCoordinate
     try {
       const result = await axios.post(url, req.body)
