@@ -2,8 +2,8 @@ import axios from "axios"
 import { Request, Response } from "express"
 import CreateOrUpdateLocation from "../utils/CreateOrUpdateLocation"
 import {Location} from '../entities/Location'
-// const YEXT_API_KEY = 'bc275d4d9487c19916b70ef74134cf5d'// prod
-const YEXT_API_KEY = '061b421ca1852bddfcf96e4138f49da4'// staging
+const YEXT_API_KEY = 'bc275d4d9487c19916b70ef74134cf5d'// prod
+// const YEXT_API_KEY = '061b421ca1852bddfcf96e4138f49da4'// staging
 const YEXT_BASE_URL = "https://api.yext.com/v2/accounts/me/"
 
 module.exports = {
@@ -73,7 +73,12 @@ module.exports = {
       entitySearch = `entities/${req.params.id}`
     }
 
-    const { data: yextLocation } = await axios.get(`${YEXT_BASE_URL}${entitySearch}?api_key=${YEXT_API_KEY}&v=20220202&limit=50`)
+    const filter = {
+      "name": {
+        "$eq":"Hoots Wings" 
+      }
+    }
+    const { data: yextLocation } = await axios.get(`${YEXT_BASE_URL}${entitySearch}?api_key=${YEXT_API_KEY}&v=20220202&filter=${encodeURIComponent(JSON.stringify(filter))}&limit=50`)
 
     const yextResponse = yextLocation.response
 
