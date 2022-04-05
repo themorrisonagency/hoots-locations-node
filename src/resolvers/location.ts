@@ -1,3 +1,4 @@
+import axios from "axios"
 import { Arg, Field, FieldResolver, InputType, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql"
 import { getConnection } from "typeorm"
 import { Location } from "../entities/Location"
@@ -104,7 +105,9 @@ export class LocationResolver {
       });
     }
 
-    return {locations, devMode: true}
+    const yextStatus = await axios.get(`http://localhost:${process.env.PORT}/hooks/yext_account`)
+    console.log(yextStatus.data)
+    return {locations, devMode: yextStatus.data.includes('Developer Account')}
   }
 
   @Query(() => Location, { nullable: true })
