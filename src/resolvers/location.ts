@@ -1,4 +1,4 @@
-import { Arg, Field, FieldResolver, InputType, Mutation, Query, Resolver, Root } from "type-graphql"
+import { Arg, Field, FieldResolver, InputType, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql"
 import { getConnection } from "typeorm"
 import { Location } from "../entities/Location"
 import { LocationInput } from "../utils/LocationInput"
@@ -21,6 +21,14 @@ class UpdateComingSoonInput {
 
   @Field()
   yextId: string
+}
+
+@ObjectType()
+class LocationResponse {
+  @Field(() => [Location])
+  locations: Location[];
+  @Field()
+  devMode: boolean;
 }
 
 
@@ -78,7 +86,7 @@ export class LocationResolver {
   }
 
 
-  @Query(() => [Location], {nullable: true})
+  @Query(() => LocationResponse, {nullable: true})
   async locations(){
 
     const locations = await getConnection()
@@ -96,8 +104,7 @@ export class LocationResolver {
       });
     }
 
-
-    return locations
+    return {locations, devMode: true}
   }
 
   @Query(() => Location, { nullable: true })

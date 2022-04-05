@@ -50,6 +50,7 @@ const main = async () => {
 
 
   // A few routes for pulling from and pushing to yext.
+  app.get('/hooks/yext_account', yext.account)
   app.post('/images', (req, res) => {
     const form = new formidable.IncomingForm({keepExtensions:true});
     form.parse(req, async function (err, _, files) {

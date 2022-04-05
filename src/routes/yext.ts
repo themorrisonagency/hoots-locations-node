@@ -94,4 +94,13 @@ module.exports = {
       console.log("e", e)
     }
   },
+  account: async (_, res: Response) => {
+    const {data} = await axios.get(`https://api.yext.com/v2/accounts?api_key=${YEXT_API_KEY}&v=20220202`)
+    if (data.response.accounts){
+      res.json(data.response.accounts[0].accountName)
+      return
+    }
+    res.json(data.response)
+
+  }
 }
