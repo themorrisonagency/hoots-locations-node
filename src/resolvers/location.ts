@@ -1,4 +1,5 @@
-import { Arg, Field, FieldResolver, InputType, Mutation, Query, Resolver, Root } from "type-graphql"
+import axios from "axios"
+import { Arg, Field, FieldResolver, InputType, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql"
 import { getConnection } from "typeorm"
 import { Location } from "../entities/Location"
 import { LocationInput } from "../utils/LocationInput"
@@ -21,6 +22,14 @@ class UpdateComingSoonInput {
 
   @Field()
   yextId: string
+}
+
+@ObjectType()
+class LocationResponse {
+  @Field(() => [Location])
+  locations: Location[];
+  @Field()
+  devMode: boolean;
 }
 
 
@@ -78,7 +87,7 @@ export class LocationResolver {
   }
 
 
-  @Query(() => [Location], {nullable: true})
+  @Query(() => LocationResponse, {nullable: true})
   async locations(){
 
     const locations = await getConnection()
@@ -96,8 +105,9 @@ export class LocationResolver {
       });
     }
 
-
-    return locations
+    const yextStatus = await axios.get(`http://localhost:${process.env.PORT}/hooks/yext_account`)
+    console.log(yextStatus.data)
+    return {locations, devMode: yextStatus.data.includes('Developer Account')}
   }
 
   @Query(() => Location, { nullable: true })
