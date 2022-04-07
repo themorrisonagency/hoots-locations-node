@@ -30,6 +30,8 @@ class LocationResponse {
   locations: Location[];
   @Field()
   devMode: boolean;
+  @Field()
+  dbMode: string;
 }
 
 
@@ -106,8 +108,8 @@ export class LocationResolver {
     }
 
     const yextStatus = await axios.get(`http://localhost:${process.env.PORT}/hooks/yext_account`)
-    console.log(yextStatus.data)
-    return {locations, devMode: yextStatus.data.includes('Developer Account')}
+    const dbMode = (process.env.DATABASE_URL.includes("staging")) ? "staging" : "production"
+    return {locations, devMode: yextStatus.data.includes('Developer Account'), dbMode}
   }
 
   @Query(() => Location, { nullable: true })

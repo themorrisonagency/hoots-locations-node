@@ -15,6 +15,7 @@ import path from "path";
 import {Location} from "./entities/Location"
 import { LocationResolver } from "./resolvers/location";
 const yext = require('./routes/yext')
+const api = require('./routes/api')
 const formidable = require('formidable');
 
 const main = async () => {
@@ -50,6 +51,7 @@ const main = async () => {
 
 
   // A few routes for pulling from and pushing to yext.
+  app.post('/hooks/geocode', api.geocode)
   app.get('/hooks/yext_account', yext.account)
   app.post('/images', (req, res) => {
     const form = new formidable.IncomingForm({keepExtensions:true});
