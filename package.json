@@ -50,6 +50,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.2",
     "formidable": "^2.0.1",
+    "geocodio-library-node": "^1.4.0",
     "graphql": "^15.5.3",
     "graphql-type-json": "^0.3.2",
     "ioredis": "^4.27.9",
