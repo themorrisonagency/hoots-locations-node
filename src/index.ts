@@ -100,7 +100,7 @@ const main = async () => {
   });
 
   app.listen(+process.env.PORT, () => {
-    console.log("server started on ");
+    console.log("server started on ", process.env.PORT);
   });
 };
 

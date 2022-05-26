@@ -45,9 +45,14 @@ export class LocationResolver {
 
   @FieldResolver(() => String)
   async hoursString(@Root() location: Location) {
-    let hours = JSON.parse(location.hours)
-    let openString = await ShowOpenHours(hours, location.timezone)
-    return openString
+    
+    console.log('location', location.hours)
+    if(location.hours){
+      let hours = JSON.parse(location.hours)
+      let openString = await ShowOpenHours(hours, location.timezone)
+      return openString
+    }
+    return 'Closed'
   }
 
   @FieldResolver(() => String)
