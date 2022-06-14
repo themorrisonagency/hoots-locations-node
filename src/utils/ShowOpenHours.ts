@@ -30,13 +30,12 @@ export default async function ShowOpenHours(hours, timezone) {
     if (oh.getState() === 1){
         return `Open - Closing at ${currentHour?.times[0].until}`
     } else {
-
+        // Check opening hours in stores time zone vs current time.
         let fromTime = currentHour?.times[0].from || Date.now()
         if(new Date().toLocaleTimeString("en-US", {timeZone: timezone}) > new Date(fromTime).toLocaleTimeString("en-US", {timeZone: timezone})){
             return `Closed - Opening tomorrow at ${oh.toLocaleJSON()[1].times[0].from}`
         }
-        return oh.getState();
-        // return `Closed - Opening at ${currentHour?.times[0].from}`
+        return `Closed - Opening at ${currentHour?.times[0].from}`
     }
     return 'Check store page'
 
